@@ -1,6 +1,7 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+@import './inputs/inputs.css';
 
 /* REGULAR */
 
@@ -49,4 +50,8 @@
   font-family: 'IBM Plex Mono', monospace;
   src: url(../../public/fonts/IBMPlexMono-SemiBold.ttf) format('truetype');
   font-weight: 600;
+}
+
+body {
+  font-size: 16px;
 }
