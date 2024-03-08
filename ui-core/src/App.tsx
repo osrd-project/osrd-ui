@@ -1,12 +1,15 @@
 import React from 'react';
-import Checkbox from './components/inputs/checkbox';
+import CheckboxList from './components/inputs/CheckboxList';
 
 function App() {
   return (
     <div >
-      <Checkbox label="Checkbox" />
-      <Checkbox label="Checkbox" small />
-    </div>
+      <CheckboxList small items={[
+        { id: '1', label: 'Item 1' },
+        { id: '2', label: 'Item 2' },
+        { id: '3', label: 'Item 3' },
+      ]} />
+    </div>  
   );
 }
 
