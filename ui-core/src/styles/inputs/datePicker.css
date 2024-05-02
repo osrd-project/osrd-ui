@@ -1,0 +1,129 @@
+.date-picker {
+    .date-picker-input {
+        .custom-field {
+            .field-wrapper-and-status-icon {
+              .input-wrapper {
+                .trailing-content-wrapper {
+                  .trailing-content {
+                    @apply text-primary-60;
+                  }
+                }
+              }
+            }
+        }
+    }
+
+    .date-picker-calendar {
+        width: 480px;
+        height: 440px;
+        border-radius: 8px;
+        box-shadow: 0px 13px 15px -7px rgba(31, 27, 23, 0.1), 0px 3px 6px rgba(31, 27, 23, 0.2);
+        padding: 32px 72px 50px 72px;
+        @apply bg-white-100;
+        
+        .date-picker-calendar-wrapper {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+
+            .calendar-navigation-btn {
+              width: 40px;
+              height: 120px;
+              /* border: 1px solid red; */
+              display: flex;
+              justify-content: center;
+              align-items: center;
+
+              &.previous {
+                margin-right: 14px;
+              }
+
+              &.next {
+                margin-left: 14px;
+              }
+            }
+
+            .calendar-body {
+
+              .calendar-month-label {
+                font-size: 14px;
+                font-weight: 600;
+                font-style: SemiBold;
+                letter-spacing: 4px;
+                text-align: center;
+                line-height: 20px;
+                text-transform: uppercase;
+                margin: 5px 0 18px 0;
+                @apply text-grey-20;
+              }
+                .calendar-grid-wrapper {
+                    .calendar-weekday-labels, .calendar-days-grid {
+                        display: grid;
+                        grid-template-columns: repeat(7, 1fr);
+                    }
+
+                    .calendar-weekday-labels {
+                        margin-bottom: 13px;
+                        
+                        p {
+                          font-size: 12px;
+                          letter-spacing: 0;
+                          text-align: center;
+                          line-height: 16px;
+                          width: 48px;
+                          height: 16px;
+                          @apply text-grey-80;
+                        }
+                    }
+                    .calendar-days-grid {
+                      grid-gap: 2px;
+                      div {
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        width: 46px;
+                        height: 46px;
+                        border-radius: 2px;
+                        @apply bg-grey-5;
+                        
+
+                        p {
+                          font-size: 18px;
+                          letter-spacing: 0px;
+                          text-align: center;
+                          line-height: 24px;
+                          font-weight: 600;
+                          font-style: SemiBold;
+                          opacity: 1;
+                          @apply text-grey-80;
+                        }
+
+                        &.other-month-day {
+                          opacity: 0.5;
+                          
+                          p {
+                            font-weight: 400;
+                            font-style: Regular;
+                            @apply text-grey-20;
+                          }
+                        }
+
+                        &.current-month-day {
+                          .current-date-highlight {
+                            width: 10px;
+                            height: 3px;
+                            border-radius: 2px;
+                            margin-top: 2px;
+                            @apply bg-grey-60;
+                          }
+                        }
+                      }
+                    }
+                }
+            }
+        }
+    }
+  }
+  
