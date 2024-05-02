@@ -18,31 +18,40 @@
         height: 440px;
         border-radius: 8px;
         box-shadow: 0px 13px 15px -7px rgba(31, 27, 23, 0.1), 0px 3px 6px rgba(31, 27, 23, 0.2);
-        padding: 32px 72px 50px 72px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
         @apply bg-white-100;
+
+        .calendar-navigation-btn {
+          width: 32px;
+          height: 64px;
+          display: flex;
+          border-radius: 4px;
+          justify-content: center;
+          align-items: center;
+
+          &.previous {
+            margin-right: 14px;
+          }
+
+          &.next {
+            margin-left: 14px;
+          }
+
+          &:hover {
+            cursor: pointer;
+            @apply bg-grey-5;
+
+          }
+          
+          &:active {
+            @apply bg-grey-10;
+          }
+        }
         
         .date-picker-calendar-wrapper {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: center;
-
-            .calendar-navigation-btn {
-              width: 40px;
-              height: 120px;
-              /* border: 1px solid red; */
-              display: flex;
-              justify-content: center;
-              align-items: center;
-
-              &.previous {
-                margin-right: 14px;
-              }
-
-              &.next {
-                margin-left: 14px;
-              }
-            }
 
             .calendar-body {
 
@@ -64,7 +73,7 @@
                     }
 
                     .calendar-weekday-labels {
-                        margin-bottom: 13px;
+                        margin-bottom: 12px;
                         
                         p {
                           font-size: 12px;
@@ -77,46 +86,85 @@
                         }
                     }
                     .calendar-days-grid {
-                      grid-gap: 2px;
-                      div {
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        width: 46px;
-                        height: 46px;
-                        border-radius: 2px;
-                        @apply bg-grey-5;
-                        
+                      margin-bottom: 48px;
 
-                        p {
-                          font-size: 18px;
-                          letter-spacing: 0px;
-                          text-align: center;
-                          line-height: 24px;
-                          font-weight: 600;
-                          font-style: SemiBold;
-                          opacity: 1;
-                          @apply text-grey-80;
+                      .month-day-background {
+                        width: 48px;
+                        height: 48px;
+                        padding: 1px;
+
+                        .month-day-wrapper {
+                          display: flex;
+                          flex-direction: column;
+                          justify-content: center;
+                          align-items: center;
+                          border-radius: 2px;
+                          height: 100%;
+                          width: 100%;
+                          @apply bg-grey-5;
+
+                          .month-day {
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            font-size: 18px;
+                            letter-spacing: 0px;
+                            text-align: center;
+                            line-height: 24px;
+                            font-weight: 600;
+                            font-style: SemiBold;
+                            opacity: 1;
+                            width: 44px;
+                            height: 24px;
+                            @apply text-grey-80;
+                            user-select: none;
+                          }
                         }
 
                         &.other-month-day {
                           opacity: 0.5;
-                          
-                          p {
-                            font-weight: 400;
-                            font-style: Regular;
-                            @apply text-grey-20;
+
+                          .month-day-wrapper {
+                            .month-day {
+                              font-weight: 400;
+                              font-style: Regular;
+                              @apply text-grey-20;
+                            }
                           }
                         }
 
                         &.current-month-day {
-                          .current-date-highlight {
-                            width: 10px;
-                            height: 3px;
-                            border-radius: 2px;
-                            margin-top: 2px;
-                            @apply bg-grey-60;
+                          .month-day-wrapper {
+                            .current-date-highlight {
+                              width: 10px;
+                              height: 3px;
+                              border-radius: 2px;
+                              margin-top: 2px;
+                              @apply bg-grey-60;
+                            }
+                          }
+                        }
+
+                        &:hover {
+                          &.current-month-day {
+                            cursor: pointer;
+                            .month-day-wrapper {
+                              @apply bg-white-100;
+                            }
+                          }
+                        }
+
+                        &:active {
+                          &.current-month-day {
+                            .month-day-wrapper {
+                              @apply bg-primary-60;
+                              .month-day {
+                                @apply text-white-100;
+                              }
+                              .current-date-highlight {
+                                @apply bg-white-100;
+                              }
+                            }
                           }
                         }
                       }

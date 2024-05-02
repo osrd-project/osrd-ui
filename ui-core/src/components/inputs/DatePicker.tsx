@@ -39,10 +39,10 @@ const Calendar: React.FC = () => {
 
   return (
     <div className="date-picker-calendar">
+      <span className="calendar-navigation-btn previous">
+        <ChevronLeft size="lg" />
+      </span>
       <div className="date-picker-calendar-wrapper">
-        <span className="calendar-navigation-btn previous">
-          <ChevronLeft size="lg" />
-        </span>
         <div className="calendar-body">
           <p className="calendar-month-label">{currentMonth}</p>
           <div className="calendar-grid-wrapper">
@@ -59,22 +59,24 @@ const Calendar: React.FC = () => {
               {allDays.map((day, index) => (
                 <div
                   key={index}
-                  className={cx({
+                  className={cx('month-day-background', {
                     'current-month-day': day.currentMonth && day.day >= currentDay,
                     'other-month-day': !day.currentMonth || day.day < currentDay,
                   })}
                 >
-                  <p>{day.day}</p>
-                  {day.day === currentDay && <p className="current-date-highlight" />}
+                  <div className="month-day-wrapper">
+                    <span className="month-day">{day.day}</span>
+                    {day.day === currentDay && <span className="current-date-highlight" />}
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-        <span className="navigation-btn next">
-          <ChevronRight size="lg" />
-        </span>
       </div>
+      <span className="calendar-navigation-btn next">
+        <ChevronRight size="lg" />
+      </span>
     </div>
   );
 };
