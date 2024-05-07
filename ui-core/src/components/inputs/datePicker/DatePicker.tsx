@@ -44,6 +44,14 @@ const Calendar: React.FC<CalendarProps> = (props) => {
   const allDays = [...daysInLastMonth, ...daysInMonth, ...daysInNextMonth];
 
   const handleDayClick = (clickedDate: Date) => {
+    if (
+      !isWithinInterval(clickedDate, selectableSlot) ||
+      clickedDate.getMonth() !== currentMonth ||
+      clickedDate.getTime() < today.getTime()
+    ) {
+      return;
+    }
+
     if (!selectedSlot || (selectedSlot && selectedSlot.end)) {
       setSelectedSlot({ start: clickedDate, end: null });
     } else if (selectedSlot?.start && clickedDate.getTime() < selectedSlot.start.getTime()) {
@@ -54,32 +62,29 @@ const Calendar: React.FC<CalendarProps> = (props) => {
   };
 
   const buildDayWrapperClassName = (date: Date) => {
-    const insideSelectableSlot = () => {
-      if (
-        selectableSlot &&
-        ((selectableSlot.start && selectableSlot.start.getTime() > date.getTime()) ||
-          (selectableSlot.end && selectableSlot.end.getTime() < date.getTime()))
-      ) {
-        return false;
-      }
-      return true;
-    };
-
     let classNames = {
-      'inside-selectable-slot': insideSelectableSlot(),
+      'inside-selectable-slot': isWithinInterval(date, selectableSlot),
       'current-month': date.getMonth() === currentMonth,
       past: date.getTime() < today.getTime(),
     } as Record<string, boolean | null>;
 
+    const isStart = (selectedSlot && isSameDay(date, selectedSlot.start)) || false;
+    const isEnd = (selectedSlot && isSameDay(date, selectedSlot.end)) || false;
+    const withinSelectedSlot =
+      (selectedSlot &&
+        selectedSlot.start &&
+        selectedSlot.end &&
+        isWithinInterval(date, selectedSlot)) ||
+      isStart ||
+      isEnd;
+
     if (selectedSlot) {
       classNames = {
         ...classNames,
-        start: isSameDay(date, selectedSlot.start),
-        end: isSameDay(date, selectedSlot.end),
-        within:
-          selectedSlot.start &&
-          selectedSlot.end &&
-          isWithinInterval(date, { start: selectedSlot.start, end: selectedSlot.end }),
+        start: isStart,
+        'start-only': isStart && !selectedSlot.end,
+        end: isEnd,
+        'within-selected-slot': withinSelectedSlot,
       };
     }
 

@@ -1,7 +1,12 @@
 import { CalendarSlot } from './type';
 
+/**
+ * Check if the given slot is valid
+ * @param slot The slot to check
+ * @returns True if the slot is valid, false otherwise
+ */
 export function isValidSlot(slot: CalendarSlot) {
-  if(slot.start && slot.end){
+  if (slot.start && slot.end) {
     return slot.start.getTime() <= slot.end.getTime();
   }
   return true;
@@ -78,6 +83,12 @@ export function getAllDatesInMonth(month: number, fullYear: number) {
   return dates;
 }
 
+/**
+ * Check if the given dates are the same day
+ * @param date1 The first date
+ * @param date2 The second date
+ * @returns True if the dates are the same day, false otherwise
+ */
 export function isSameDay(date1: Date | null, date2: Date | null) {
   if (date1 === null || date2 === null) {
     return false;
@@ -90,6 +101,21 @@ export function isSameDay(date1: Date | null, date2: Date | null) {
   );
 }
 
-export function isWithinInterval(date: Date, interval: { start: Date; end: Date }) {
-  return date.getTime() >= interval.start.getTime() && date.getTime() <= interval.end.getTime();
+/**
+ * Check if the given date is within the given slot
+ * if the slot is not provided, the date is considered to be within the slot
+ * if a boundary of the slot is not provided, it's considered to be an open boundary
+ * @param date The date to check
+ * @param slot The slot to check
+ * @returns True if the date is within the slot, false otherwise
+ */
+export function isWithinInterval(date: Date, slot?: CalendarSlot) {
+  if (
+    slot &&
+    ((slot.start && slot.start.getTime() > date.getTime()) ||
+      (slot.end && slot.end.getTime() < date.getTime()))
+  ) {
+    return false;
+  }
+  return true;
 }
