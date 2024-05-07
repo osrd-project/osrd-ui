@@ -2,12 +2,18 @@ import { StoryObj, Meta } from '@storybook/react';
 
 import '@osrd-project/ui-core/dist/theme.css';
 
-import DatePicker from '../components/inputs/DatePicker';
+import DatePicker from '../components/inputs/datePicker/DatePicker';
 
 const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
   args: {
-    label: 'Departure date',
+    calendarProps: {
+      selectableSlot: { start: new Date(2024, 4, 3), end: null },
+    },
+    inputProps: {
+      id: 'date-picker',
+      label: 'Select a date',
+    },
   },
   title: 'DatePicker',
   tags: ['autodocs'],
