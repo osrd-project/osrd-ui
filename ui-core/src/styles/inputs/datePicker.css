@@ -40,13 +40,17 @@
             margin-left: 14px;
           }
 
-          &:hover {
+          &.disabled {
+            @apply text-grey-20;
+          }
+
+          &:not(.disabled):hover {
             cursor: pointer;
             @apply bg-grey-5;
 
           }
           
-          &:active {
+          &:not(.disabled):active {
             @apply bg-grey-10;
           }
         }

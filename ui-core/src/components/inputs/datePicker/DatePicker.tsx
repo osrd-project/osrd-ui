@@ -39,6 +39,17 @@ const Calendar: React.FC<CalendarProps> = (props) => {
   const daysInLastMonth = getDatesFromPreviousMonthInFirstWeek(currentMonth, currentYear);
   const daysInNextMonth = getDatesFromNextMonthInLastWeek(currentMonth, currentYear);
   const allDays = [...daysInLastMonth, ...daysInMonth, ...daysInNextMonth];
+  const canGoToPreviousMonth =
+    props.selectableSlot?.start === null
+      ? true
+      : !daysInMonth.some((d) => d.getTime() === props.selectableSlot?.start?.getTime());
+
+  const canGoToNextMonth =
+    props.selectableSlot?.end === null
+      ? true
+      : !daysInMonth.some((d) => d.getTime() === props.selectableSlot?.end?.getTime());
+
+  const showNavigationBtn = canGoToPreviousMonth || canGoToNextMonth;
 
   const handleDayClick = (clickedDate: Date) => {
     if (
@@ -59,15 +70,19 @@ const Calendar: React.FC<CalendarProps> = (props) => {
   };
 
   const handleGoToPreviousMonth = () => {
-    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-    const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-    setCurrentDate(new Date(previousYear, previousMonth, 1));
+    if (canGoToPreviousMonth) {
+      const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+      const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+      setCurrentDate(new Date(previousYear, previousMonth, 1));
+    }
   };
 
   const handleGoToNextMonth = () => {
-    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-    setCurrentDate(new Date(nextYear, nextMonth, 1));
+    if (canGoToNextMonth) {
+      const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+      const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+      setCurrentDate(new Date(nextYear, nextMonth, 1));
+    }
   };
 
   const buildDayWrapperClassName = (date: Date) => {
@@ -104,9 +119,16 @@ const Calendar: React.FC<CalendarProps> = (props) => {
 
   return (
     <div className="date-picker-calendar">
-      <span className="calendar-navigation-btn previous" onClick={handleGoToPreviousMonth}>
-        <ChevronLeft size="lg" />
-      </span>
+      {showNavigationBtn && (
+        <span
+          className={cx('calendar-navigation-btn', 'previous', {
+            disabled: !canGoToPreviousMonth,
+          })}
+          onClick={handleGoToPreviousMonth}
+        >
+          <ChevronLeft size="lg" />
+        </span>
+      )}
       <div className="date-picker-calendar-wrapper">
         <div className="calendar-body">
           <p className="calendar-month-label">
@@ -139,9 +161,16 @@ const Calendar: React.FC<CalendarProps> = (props) => {
           </div>
         </div>
       </div>
-      <span className="calendar-navigation-btn next" onClick={handleGoToNextMonth}>
-        <ChevronRight size="lg" />
-      </span>
+      {showNavigationBtn && (
+        <span
+          className={cx('calendar-navigation-btn', 'next', {
+            disabled: !canGoToNextMonth,
+          })}
+          onClick={handleGoToNextMonth}
+        >
+          <ChevronRight size="lg" />
+        </span>
+      )}
     </div>
   );
 };
