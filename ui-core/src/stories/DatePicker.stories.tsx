@@ -8,7 +8,7 @@ const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
   args: {
     calendarProps: {
-      selectableSlot: { start: new Date(2024, 4, 3), end: null },
+      selectableSlot: { start: new Date(2024, 4, 3), end: new Date(2024, 5, 28) },
     },
     inputProps: {
       id: 'date-picker',

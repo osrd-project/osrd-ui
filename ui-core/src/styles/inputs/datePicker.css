@@ -151,15 +151,6 @@
                               }
                             }
 
-                            &.past {
-                              opacity: 0.5;
-                              @apply bg-grey-5;
-                              .day {
-                                font-weight: 400;
-                                @apply text-grey-20;
-                              }
-                            }
-
                             &.start {
                               border-radius: 6px 0px 0px 6px;
                               box-shadow: 0px 15px 12px -7px rgba(0, 0, 0, 0.04), 0px 2px 6px -3px rgba(0, 0, 0, 0.26), 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 10px -4px rgba(60, 138, 255, 0.5), 0px 8px 16px -6px rgba(114, 168, 247, 0.29);
@@ -197,7 +188,7 @@
                             }
                           }
 
-                          &.past {
+                          &.past, &.outside-selectable-slot, &.inside-selectable-slot.past {
                             opacity: 0.5;
                             @apply bg-grey-5;
                             

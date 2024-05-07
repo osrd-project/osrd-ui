@@ -71,12 +71,6 @@ const Calendar: React.FC<CalendarProps> = (props) => {
   };
 
   const buildDayWrapperClassName = (date: Date) => {
-    let classNames = {
-      'inside-selectable-slot': isWithinInterval(date, props.selectableSlot),
-      'current-month': date.getMonth() === currentMonth,
-      past: date.getTime() < today.getTime(),
-    } as Record<string, boolean | null>;
-
     const isStart = (selectedSlot && isSameDay(date, selectedSlot.start)) || false;
     const isEnd = (selectedSlot && isSameDay(date, selectedSlot.end)) || false;
     const withinSelectedSlot =
@@ -86,6 +80,14 @@ const Calendar: React.FC<CalendarProps> = (props) => {
         isWithinInterval(date, selectedSlot)) ||
       isStart ||
       isEnd;
+    const insideSelectableSlot = isWithinInterval(date, props.selectableSlot);
+
+    let classNames = {
+      'inside-selectable-slot': insideSelectableSlot,
+      'outside-selectable-slot': !insideSelectableSlot,
+      'current-month': date.getMonth() === currentMonth,
+      past: date.getTime() < today.getTime(),
+    } as Record<string, boolean | null>;
 
     if (selectedSlot) {
       classNames = {
