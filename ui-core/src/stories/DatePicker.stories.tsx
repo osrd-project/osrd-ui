@@ -7,7 +7,7 @@ import DatePicker from '../components/inputs/datePicker/DatePicker';
 const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
   args: {
-    calendarProps: {
+    calendarPickerProps: {
       selectableSlot: { start: new Date(2024, 4, 3), end: new Date(2024, 5, 28) },
     },
     inputProps: {
