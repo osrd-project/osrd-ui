@@ -18,7 +18,7 @@ export function isValidSlot(slot: CalendarSlot) {
  * @param fullYear The year of the current date
  * @returns   An array of dates from the previous month that are in the first week of the current month
  */
-export function getPrevMonthDatesInFirstWeek(month: number, fullYear: number): Date[] {
+export function getDatesFromPreviousMonthInFirstWeek(month: number, fullYear: number): Date[] {
   const firstDayOfMonth = new Date(fullYear, month, 1);
   const firstDayOfWeek = firstDayOfMonth.getDay();
 
@@ -33,7 +33,7 @@ export function getPrevMonthDatesInFirstWeek(month: number, fullYear: number): D
   const dates: Date[] = [];
   for (let i = 0; i < daysFromPrevMonth; i++) {
     const day = lastDayPrevMonth.getDate() - i;
-    dates.push(new Date(lastDayPrevMonth.getFullYear(), lastDayPrevMonth.getMonth(), day));
+    dates.unshift(new Date(lastDayPrevMonth.getFullYear(), lastDayPrevMonth.getMonth(), day));
   }
 
   return dates;
@@ -45,7 +45,7 @@ export function getPrevMonthDatesInFirstWeek(month: number, fullYear: number): D
  * @param fullYear The year of the current date
  * @returns  An array of dates from the next month that are in the last week of the current month
  */
-export function getNextMonthDatesInLastWeek(month: number, fullYear: number) {
+export function getDatesFromNextMonthInLastWeek(month: number, fullYear: number) {
   const lastDayOfMonth = new Date(fullYear, month + 1, 0);
   const lastDayOfWeek = lastDayOfMonth.getDay();
   const daysFromNextMonth = (7 - lastDayOfWeek) % 7;

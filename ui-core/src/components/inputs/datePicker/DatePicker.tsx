@@ -3,8 +3,8 @@ import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from '@osrd-proje
 import Input, { InputProps } from '../Input';
 import {
   getAllDatesInMonth,
-  getPrevMonthDatesInFirstWeek,
-  getNextMonthDatesInLastWeek,
+  getDatesFromPreviousMonthInFirstWeek,
+  getDatesFromNextMonthInLastWeek,
   isValidSlot,
   isSameDay,
   isWithinInterval,
@@ -15,7 +15,6 @@ import { CalendarSlot } from './type';
 export type CalendarProps = {
   selectedSlot?: CalendarSlot;
   selectableSlot?: CalendarSlot;
-  currentDate?: Date;
 };
 
 const Calendar: React.FC<CalendarProps> = (props) => {
@@ -27,25 +26,23 @@ const Calendar: React.FC<CalendarProps> = (props) => {
     throw new Error('props.selectableSlot is invalid');
   }
   const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(props.selectedSlot);
-  const [selectableSlot, setSelectableSlot] = useState<CalendarSlot | undefined>(
-    props.selectableSlot
-  );
 
-  const currentDate = selectableSlot?.start ? selectableSlot.start : new Date();
+  const initialCurrentDate = props.selectableSlot?.start ? props.selectableSlot.start : new Date();
 
-  const [currentMonth, setCurrentMonth] = useState<number>(currentDate.getMonth());
-  const [currentYear, setCurrentYear] = useState<number>(currentDate.getFullYear());
+  const [currentDate, setCurrentDate] = useState<Date>(initialCurrentDate);
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
+  const currentYear = currentDate.getFullYear();
+  const currentMonth = currentDate.getMonth();
   const daysInMonth = getAllDatesInMonth(currentMonth, currentYear);
-  const daysInLastMonth = getPrevMonthDatesInFirstWeek(currentMonth, currentYear);
-  const daysInNextMonth = getNextMonthDatesInLastWeek(currentMonth, currentYear);
+  const daysInLastMonth = getDatesFromPreviousMonthInFirstWeek(currentMonth, currentYear);
+  const daysInNextMonth = getDatesFromNextMonthInLastWeek(currentMonth, currentYear);
   const allDays = [...daysInLastMonth, ...daysInMonth, ...daysInNextMonth];
 
   const handleDayClick = (clickedDate: Date) => {
     if (
-      !isWithinInterval(clickedDate, selectableSlot) ||
+      !isWithinInterval(clickedDate, props.selectableSlot) ||
       clickedDate.getMonth() !== currentMonth ||
       clickedDate.getTime() < today.getTime()
     ) {
@@ -61,9 +58,21 @@ const Calendar: React.FC<CalendarProps> = (props) => {
     }
   };
 
+  const handleGoToPreviousMonth = () => {
+    const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
+    const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
+    setCurrentDate(new Date(previousYear, previousMonth, 1));
+  };
+
+  const handleGoToNextMonth = () => {
+    const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
+    const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+    setCurrentDate(new Date(nextYear, nextMonth, 1));
+  };
+
   const buildDayWrapperClassName = (date: Date) => {
     let classNames = {
-      'inside-selectable-slot': isWithinInterval(date, selectableSlot),
+      'inside-selectable-slot': isWithinInterval(date, props.selectableSlot),
       'current-month': date.getMonth() === currentMonth,
       past: date.getTime() < today.getTime(),
     } as Record<string, boolean | null>;
@@ -93,7 +102,7 @@ const Calendar: React.FC<CalendarProps> = (props) => {
 
   return (
     <div className="date-picker-calendar">
-      <span className="calendar-navigation-btn previous">
+      <span className="calendar-navigation-btn previous" onClick={handleGoToPreviousMonth}>
         <ChevronLeft size="lg" />
       </span>
       <div className="date-picker-calendar-wrapper">
@@ -128,7 +137,7 @@ const Calendar: React.FC<CalendarProps> = (props) => {
           </div>
         </div>
       </div>
-      <span className="calendar-navigation-btn next">
+      <span className="calendar-navigation-btn next" onClick={handleGoToNextMonth}>
         <ChevronRight size="lg" />
       </span>
     </div>
