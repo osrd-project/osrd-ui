@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import cx from 'classnames';
 import {
   getAllDatesInMonth,
   getDatesFromPreviousMonthInFirstWeek,
@@ -6,53 +7,33 @@ import {
   isSameDay,
   isWithinInterval,
 } from './utils';
-import cx from 'classnames';
 import { CalendarSlot } from './type';
 
 export type CalendarProps = {
   selectedSlot?: CalendarSlot;
   selectableSlot?: CalendarSlot;
-  currentDate: Date;
+  displayedMonthStartDate: Date;
+  onClickDay: (date: Date) => void;
 };
 
 const Calendar: React.FC<CalendarProps> = (props) => {
-  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(props.selectedSlot);
-
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  const currentYear = props.currentDate.getFullYear();
-  const currentMonth = props.currentDate.getMonth();
-  const daysInMonth = getAllDatesInMonth(currentMonth, currentYear);
-  const daysInLastMonth = getDatesFromPreviousMonthInFirstWeek(currentMonth, currentYear);
-  const daysInNextMonth = getDatesFromNextMonthInLastWeek(currentMonth, currentYear);
+  const displayedYear = props.displayedMonthStartDate.getFullYear();
+  const displayedMonth = props.displayedMonthStartDate.getMonth();
+  const daysInMonth = getAllDatesInMonth(displayedMonth, displayedYear);
+  const daysInLastMonth = getDatesFromPreviousMonthInFirstWeek(displayedMonth, displayedYear);
+  const daysInNextMonth = getDatesFromNextMonthInLastWeek(displayedMonth, displayedYear);
   const allDays = [...daysInLastMonth, ...daysInMonth, ...daysInNextMonth];
 
-  const handleDayClick = (clickedDate: Date) => {
-    if (
-      !isWithinInterval(clickedDate, props.selectableSlot) ||
-      clickedDate.getMonth() !== currentMonth ||
-      clickedDate.getTime() < today.getTime()
-    ) {
-      return;
-    }
-
-    if (!selectedSlot || (selectedSlot && selectedSlot.end)) {
-      setSelectedSlot({ start: clickedDate, end: null });
-    } else if (selectedSlot?.start && clickedDate.getTime() < selectedSlot.start.getTime()) {
-      setSelectedSlot({ start: clickedDate, end: selectedSlot.start });
-    } else {
-      setSelectedSlot({ ...selectedSlot, end: clickedDate });
-    }
-  };
-
   const buildDayWrapperClassName = (date: Date) => {
-    const isStart = (selectedSlot && isSameDay(date, selectedSlot.start)) || false;
-    const isEnd = (selectedSlot && isSameDay(date, selectedSlot.end)) || false;
+    const isStart = (props.selectedSlot && isSameDay(date, props.selectedSlot.start)) || false;
+    const isEnd = (props.selectedSlot && isSameDay(date, props.selectedSlot.end)) || false;
     const withinSelectedSlot =
-      (selectedSlot &&
-        selectedSlot.start &&
-        selectedSlot.end &&
-        isWithinInterval(date, selectedSlot)) ||
+      (props.selectedSlot &&
+        props.selectedSlot.start &&
+        props.selectedSlot.end &&
+        isWithinInterval(date, props.selectedSlot)) ||
       isStart ||
       isEnd;
     const insideSelectableSlot = isWithinInterval(date, props.selectableSlot);
@@ -60,15 +41,15 @@ const Calendar: React.FC<CalendarProps> = (props) => {
     let classNames = {
       'inside-selectable-slot': insideSelectableSlot,
       'outside-selectable-slot': !insideSelectableSlot,
-      'current-month': date.getMonth() === currentMonth,
+      'current-month': date.getMonth() === displayedMonth,
       past: date.getTime() < today.getTime(),
     } as Record<string, boolean | null>;
 
-    if (selectedSlot) {
+    if (props.selectedSlot) {
       classNames = {
         ...classNames,
         start: isStart,
-        'start-only': isStart && !selectedSlot.end,
+        'start-only': isStart && !props.selectedSlot.end,
         end: isEnd,
         'within-selected-slot': withinSelectedSlot,
       };
@@ -77,11 +58,27 @@ const Calendar: React.FC<CalendarProps> = (props) => {
     return cx('day-wrapper', classNames);
   };
 
+  const isDateSelectable = (date: Date) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // Check if the date is within the selectable interval
+    if (!isWithinInterval(date, props.selectableSlot)) return false;
+
+    // Check if the date is in the currently displayed month
+    if (date.getMonth() !== displayedMonth) return false;
+
+    // Check if the date is not in the past
+    if (date.getTime() < today.getTime()) return false;
+
+    return true;
+  };
+
   return (
-    <div className="date-picker-calendar-wrapper">
+    <div className="calendar-wrapper">
       <div className="calendar-body">
         <p className="calendar-month-label">
-          {props.currentDate.toLocaleString('en-GB', { month: 'short' })}
+          {props.displayedMonthStartDate.toLocaleString('en-GB', { month: 'short' })}
         </p>
         <div className="calendar-grid-wrapper">
           <div className="calendar-weekday-labels">
@@ -96,7 +93,13 @@ const Calendar: React.FC<CalendarProps> = (props) => {
           <div className="calendar-days-grid">
             {allDays.map((date, index) => {
               return (
-                <div key={index} onClick={() => handleDayClick(date)} className="day-background">
+                <div
+                  key={index}
+                  onClick={() => {
+                    if (isDateSelectable(date)) props.onClickDay(date);
+                  }}
+                  className="day-background"
+                >
                   <div className={buildDayWrapperClassName(date)}>
                     <span className="day">{date.getDate()}</span>
                     {date.getTime() === today.getTime() && (

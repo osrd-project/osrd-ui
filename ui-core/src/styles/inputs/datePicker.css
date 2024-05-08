@@ -13,9 +13,8 @@
         }
     }
 
-    .date-picker-calendar {
-        width: 480px;
-        height: 440px;
+    .calendar-picker {
+        width: fit-content;
         border-radius: 8px;
         box-shadow: 0px 13px 15px -7px rgba(31, 27, 23, 0.1), 0px 3px 6px rgba(31, 27, 23, 0.2);
         display: flex;
@@ -33,11 +32,13 @@
           align-items: center;
 
           &.previous {
+            margin-left: 18px;
             margin-right: 14px;
           }
 
           &.next {
             margin-left: 14px;
+            margin-right: 18px;
           }
 
           &.disabled {
@@ -55,7 +56,19 @@
           }
         }
         
-        .date-picker-calendar-wrapper {
+        .calendar-list {
+          display: flex;
+          justify-content: space-between;
+          gap: 48px;
+          margin-top: 32px;
+          margin-bottom: 47px;
+
+          &.navigation-btn-hidden {
+            margin-left: 72px;
+            margin-right: 72px;
+          }
+
+          .calendar-wrapper {
 
             .calendar-body {
 
@@ -144,6 +157,42 @@
                                   @apply bg-white-100;
                                 }
                               }
+
+                              &.start {
+                                border-radius: 6px 0px 0px 6px;
+                                box-shadow: 0px 15px 12px -7px rgba(0, 0, 0, 0.04), 0px 2px 6px -3px rgba(0, 0, 0, 0.26), 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 10px -4px rgba(60, 138, 255, 0.5), 0px 8px 16px -6px rgba(114, 168, 247, 0.29);
+                                opacity: 1;
+                                @apply bg-primary-90;
+                                .day {
+                                  @apply text-white-100;
+                                }
+  
+                                &.start-only{
+                                  border-radius: 6px;
+                                }
+                              }
+  
+                              &.within-selected-slot {
+                                box-shadow: 0px 15px 12px -7px rgba(0, 0, 0, 0.04), 0px 2px 6px -3px rgba(0, 0, 0, 0.26), 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 10px -4px rgba(60, 138, 255, 0.5), 0px 8px 16px -6px rgba(114, 168, 247, 0.29);
+                                opacity: 1;
+                                @apply bg-primary-90;
+                                .day {
+                                  @apply text-white-100;
+                                }
+                                .current-date-highlight {
+                                  @apply bg-white-100;
+                                }
+                              }
+  
+                              &.end {
+                                border-radius: 0px 6px 6px 0px;
+                                box-shadow: 0px 15px 12px -7px rgba(0, 0, 0, 0.04), 0px 2px 6px -3px rgba(0, 0, 0, 0.26), 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 10px -4px rgba(60, 138, 255, 0.5), 0px 8px 16px -6px rgba(114, 168, 247, 0.29);
+                                opacity: 1;
+                                @apply bg-primary-90;
+                                .day {
+                                  @apply text-white-100;
+                                }
+                              }
                             }
 
                             &:not(.current-month) {
@@ -152,42 +201,6 @@
                               .day {
                                 font-weight: 600;
                                 @apply text-grey-30;
-                              }
-                            }
-
-                            &.start {
-                              border-radius: 6px 0px 0px 6px;
-                              box-shadow: 0px 15px 12px -7px rgba(0, 0, 0, 0.04), 0px 2px 6px -3px rgba(0, 0, 0, 0.26), 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 10px -4px rgba(60, 138, 255, 0.5), 0px 8px 16px -6px rgba(114, 168, 247, 0.29);
-                              opacity: 1;
-                              @apply bg-primary-90;
-                              .day {
-                                @apply text-white-100;
-                              }
-
-                              &.start-only {
-                                border-radius: 6px;
-                              }
-                            }
-
-                            &.within-selected-slot {
-                              box-shadow: 0px 15px 12px -7px rgba(0, 0, 0, 0.04), 0px 2px 6px -3px rgba(0, 0, 0, 0.26), 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 10px -4px rgba(60, 138, 255, 0.5), 0px 8px 16px -6px rgba(114, 168, 247, 0.29);
-                              opacity: 1;
-                              @apply bg-primary-90;
-                              .day {
-                                @apply text-white-100;
-                              }
-                              .current-date-highlight {
-                                @apply bg-white-100;
-                              }
-                            }
-
-                            &.end {
-                              border-radius: 0px 6px 6px 0px;
-                              box-shadow: 0px 15px 12px -7px rgba(0, 0, 0, 0.04), 0px 2px 6px -3px rgba(0, 0, 0, 0.26), 0px 1px 1px rgba(0, 0, 0, 0.12), 0px 4px 10px -4px rgba(60, 138, 255, 0.5), 0px 8px 16px -6px rgba(114, 168, 247, 0.29);
-                              opacity: 1;
-                              @apply bg-primary-90;
-                              .day {
-                                @apply text-white-100;
                               }
                             }
                           }
@@ -214,6 +227,7 @@
                     }
                 }
             }
+        }
         }
     }
   }

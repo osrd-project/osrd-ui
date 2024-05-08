@@ -1,75 +1,122 @@
 import React, { useState } from 'react';
+import cx from 'classnames';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from '@osrd-project/ui-icons';
 import Input, { InputProps } from '../Input';
 import Calendar from './Calendar';
 import { getAllDatesInMonth, isValidSlot } from './utils';
-import cx from 'classnames';
 import { CalendarSlot } from './type';
 
 export type CalendarPickerProps = {
   selectedSlot?: CalendarSlot;
   selectableSlot?: CalendarSlot;
+  calendarCount?: 1 | 2 | 3;
 };
 
-const CalendarPicker: React.FC<CalendarPickerProps> = (props) => {
-  if (props.selectedSlot && !isValidSlot(props.selectedSlot)) {
-    throw new Error('props.selectedSlot is invalid');
+const CalendarPicker: React.FC<CalendarPickerProps> = ({
+  selectedSlot: initialSelectedSlot,
+  selectableSlot,
+  calendarCount = 1,
+}) => {
+  if (initialSelectedSlot && !isValidSlot(initialSelectedSlot)) {
+    throw new Error(
+      'Invalid selectedSlot: If start and end are defined, the start date must be before the end date.'
+    );
   }
 
-  if (props.selectableSlot && !isValidSlot(props.selectableSlot)) {
-    throw new Error('props.selectableSlot is invalid');
+  if (selectableSlot && !isValidSlot(selectableSlot)) {
+    throw new Error(
+      'Invalid selectableSlot: If start and end are defined, the start date must be before the end date.'
+    );
   }
 
   if (
-    props.selectedSlot?.start &&
-    props.selectedSlot?.end &&
-    props.selectableSlot?.start &&
-    props.selectableSlot?.end &&
-    (props.selectedSlot.start < props.selectableSlot.start ||
-      props.selectedSlot.end > props.selectableSlot.end)
+    initialSelectedSlot?.start &&
+    initialSelectedSlot?.end &&
+    selectableSlot?.start &&
+    selectableSlot?.end &&
+    (initialSelectedSlot.start < selectableSlot.start ||
+      initialSelectedSlot.end > selectableSlot.end)
   ) {
-    throw new Error('props.selectedSlot must be within props.selectableSlot');
+    throw new Error('selectedSlot must be within selectableSlot');
   }
 
-  const initialCurrentDate = props.selectableSlot?.start ? props.selectableSlot.start : new Date();
+  const initialActiveDate = selectableSlot?.start ? selectableSlot.start : new Date();
+  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(initialSelectedSlot);
+  const [activeDate, setActiveDate] = useState<Date>(initialActiveDate);
+  const displayedMonthsStartDates = Array.from({ length: calendarCount }).map((_, index) => {
+    const month = activeDate.getMonth() + index;
+    const year = activeDate.getFullYear() + Math.floor(month / 12);
+    return new Date(year, month % 12, 1);
+  });
 
-  const [currentDate, setCurrentDate] = useState<Date>(initialCurrentDate);
-
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const currentYear = currentDate.getFullYear();
-  const currentMonth = currentDate.getMonth();
-  const daysInMonth = getAllDatesInMonth(currentMonth, currentYear);
+  const activeYear = activeDate.getFullYear();
+  const activeMonth = activeDate.getMonth();
+  const daysInMonth = displayedMonthsStartDates
+    .map((date) => getAllDatesInMonth(date.getMonth(), date.getFullYear()))
+    .flat();
   const canGoToPreviousMonth =
-    props.selectableSlot?.start === null
+    selectableSlot?.start === null
       ? true
-      : !daysInMonth.some((d) => d.getTime() === props.selectableSlot?.start?.getTime());
+      : !daysInMonth.some((d) => d.getTime() === selectableSlot?.start?.getTime());
 
   const canGoToNextMonth =
-    props.selectableSlot?.end === null
+    selectableSlot?.end === null
       ? true
-      : !daysInMonth.some((d) => d.getTime() === props.selectableSlot?.end?.getTime());
+      : !daysInMonth.some((d) => d.getTime() === selectableSlot?.end?.getTime());
 
   const showNavigationBtn = canGoToPreviousMonth || canGoToNextMonth;
 
   const handleGoToPreviousMonth = () => {
     if (canGoToPreviousMonth) {
-      const previousMonth = currentMonth === 0 ? 11 : currentMonth - 1;
-      const previousYear = currentMonth === 0 ? currentYear - 1 : currentYear;
-      setCurrentDate(new Date(previousYear, previousMonth, 1));
+      const previousActiveMonth = activeMonth === 0 ? 11 : activeMonth - 1;
+      const previousActiveYear = activeMonth === 0 ? activeYear - 1 : activeYear;
+      setActiveDate(new Date(previousActiveYear, previousActiveMonth, 1));
     }
   };
 
   const handleGoToNextMonth = () => {
     if (canGoToNextMonth) {
-      const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1;
-      const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear;
-      setCurrentDate(new Date(nextYear, nextMonth, 1));
+      const nextActiveMonth = activeMonth === 11 ? 0 : activeMonth + 1;
+      const nextActiveYear = activeMonth === 11 ? activeYear + 1 : activeYear;
+      setActiveDate(new Date(nextActiveYear, nextActiveMonth, 1));
+    }
+  };
+
+  /**
+   * Handles the logic for when a day is clicked on the calendar.
+   *
+   * @param clickedDate - The date that was clicked.
+   *
+   * Spec 1: A user can select a start date and an end date to create a slot.
+   * Spec 2: If the user clicks on a single date, that date is set as the start date of the slot.
+   * Spec 3: If the user clicks on a date that is before the currently selected start date, the new date becomes the start date and the previous start date becomes the end date.
+   * Spec 4: If the user clicks on a date that is after the currently selected start date, that date becomes the end date of the slot.
+   * Spec 5: If the user selects the same end date as the start date, clear the slot
+   * Spec 6: If a slot is already defined (i.e., both start and end dates are defined) and the user clicks on a new date, the existing slot is cleared and the new date becomes the start date of the new slot.
+   */
+  const handleDayClick = (clickedDate: Date) => {
+    if (!selectedSlot || selectedSlot?.start === null) {
+      // Spec 2
+      setSelectedSlot({ start: clickedDate, end: null });
+    } else if (!selectedSlot.end) {
+      if (clickedDate.getTime() === selectedSlot.start.getTime()) {
+        // Spec 5
+        setSelectedSlot(undefined);
+      } else if (clickedDate.getTime() < selectedSlot.start.getTime()) {
+        // Spec 3
+        setSelectedSlot({ start: clickedDate, end: selectedSlot.start });
+      } else {
+        // Spec 4
+        setSelectedSlot({ start: selectedSlot.start, end: clickedDate });
+      }
+    } else {
+      // Spec 6
+      setSelectedSlot({ start: clickedDate, end: null });
     }
   };
 
   return (
-    <div className="date-picker-calendar">
+    <div className="calendar-picker">
       {showNavigationBtn && (
         <span
           className={cx('calendar-navigation-btn', 'previous', {
@@ -80,11 +127,19 @@ const CalendarPicker: React.FC<CalendarPickerProps> = (props) => {
           <ChevronLeft size="lg" />
         </span>
       )}
-      <Calendar
-        currentDate={currentDate}
-        selectableSlot={props.selectableSlot}
-        selectedSlot={props.selectedSlot}
-      />
+      <div className={cx('calendar-list', { 'navigation-btn-hidden': !showNavigationBtn })}>
+        {displayedMonthsStartDates.map((date, index) => {
+          return (
+            <Calendar
+              key={index}
+              displayedMonthStartDate={date}
+              selectableSlot={selectableSlot}
+              selectedSlot={selectedSlot}
+              onClickDay={handleDayClick}
+            />
+          );
+        })}
+      </div>
       {showNavigationBtn && (
         <span
           className={cx('calendar-navigation-btn', 'next', {
