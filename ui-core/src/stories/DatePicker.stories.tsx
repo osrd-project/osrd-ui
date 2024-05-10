@@ -30,6 +30,20 @@ export default meta;
 
 type Story = StoryObj<typeof DatePicker>;
 
-export const Default: Story = {
-  args: {},
+export const Single: Story = {
+  args: {
+    calendarPickerProps: {
+      ...meta.args?.calendarPickerProps,
+      mode: 'single',
+    },
+  },
+};
+
+export const Range: Story = {
+  args: {
+    calendarPickerProps: {
+      ...meta.args?.calendarPickerProps,
+      mode: 'range',
+    },
+  },
 };

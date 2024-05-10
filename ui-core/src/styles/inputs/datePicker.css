@@ -172,10 +172,6 @@
                                 .day {
                                   @apply text-white-100;
                                 }
-  
-                                &.start-only{
-                                  border-radius: 6px;
-                                }
                               }
   
                               &.within-selected-slot {
@@ -198,6 +194,10 @@
                                 .day {
                                   @apply text-white-100;
                                 }
+                              }
+
+                              &.start.end {
+                                border-radius: 6px;
                               }
                             }
 

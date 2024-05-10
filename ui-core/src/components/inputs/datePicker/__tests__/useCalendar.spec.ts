@@ -123,10 +123,6 @@ describe('useCalendar', () => {
         expect(result.current.buildDayWrapperClassName(new Date(2024, august, 1))).not.toContain('past');
       });
 
-      it("should assign 'start-only' classname to the start day of the selected slot when the end date is undefined", () => {
-        expect(result.current.buildDayWrapperClassName(selectedSlot.start)).toContain('start-only');
-      });
-
       it('should have "current-month" classname for days in the displayed month', () => {
         expect(result.current.buildDayWrapperClassName(new Date(2024, july, 15))).toContain(
           'current-month'

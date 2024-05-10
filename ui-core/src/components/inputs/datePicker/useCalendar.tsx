@@ -45,7 +45,6 @@ export default function useCalendar({
       classNames = {
         ...classNames,
         start: isStart,
-        'start-only': isStart && !selectedSlot.end,
         end: isEnd,
         'within-selected-slot': withinSelectedSlot,
       };

@@ -10,6 +10,7 @@ export type CalendarPickerProps = {
   selectedSlot?: CalendarSlot;
   selectableSlot?: CalendarSlot;
   numberOfMonths?: 1 | 2 | 3;
+  mode?: 'single' | 'range';
 };
 
 const CalendarPicker: React.FC<CalendarPickerProps> = ({
@@ -17,6 +18,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
   selectedSlot: initialSelectedSlot,
   selectableSlot,
   numberOfMonths = 1,
+  mode = 'single',
 }) => {
   const {
     selectedSlot,
@@ -32,6 +34,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
     selectedSlot: initialSelectedSlot,
     selectableSlot,
     numberOfMonths,
+    mode,
   });
 
   return (

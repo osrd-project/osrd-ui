@@ -71,59 +71,80 @@ describe('useCalendarPicker', () => {
   });
 
   describe('Day click handling', () => {
-    it('should set clicked date as start date when no slot is selected', () => {
-      const { result } = renderHook(() => useCalendarPicker({}));
-      const clickedDate = new Date(2024, february, 1);
-      act(() => result.current.handleDayClick(clickedDate));
+    describe('Single mode', () => {
+      it('should set clicked date as start date all the time', () => {
+        const { result } = renderHook(() => useCalendarPicker({}));
+        const firstClickedDate = new Date(2024, february, 1);
+        const secondClickedDate = new Date(2024, june, 1);
+        act(() => result.current.handleDayClick(firstClickedDate));
+        expect(result.current.selectedSlot).toEqual({
+          start: firstClickedDate,
+          end: firstClickedDate,
+        });
 
-      expect(result.current.selectedSlot).toEqual({ start: clickedDate, end: null });
-    });
-
-    it('should clear the slot when the same date is clicked', () => {
-      const { result } = renderHook(() => useCalendarPicker({}));
-      const clickedDate = new Date(2024, february, 1);
-      act(() => result.current.handleDayClick(clickedDate));
-      act(() => result.current.handleDayClick(clickedDate));
-
-      expect(result.current.selectedSlot).toBeUndefined();
-    });
-
-    it('should set clicked date as start date and previous start date as end date when clicked date is before current start date', () => {
-      const { result } = renderHook(() => useCalendarPicker({}));
-      const firstClickedDate = new Date(2024, february, 2);
-      const secondClickedDate = new Date(2024, february, 1);
-      act(() => result.current.handleDayClick(firstClickedDate));
-      act(() => result.current.handleDayClick(secondClickedDate));
-
-      expect(result.current.selectedSlot).toEqual({
-        start: secondClickedDate,
-        end: firstClickedDate,
+        act(() => result.current.handleDayClick(secondClickedDate));
+        expect(result.current.selectedSlot).toEqual({
+          start: secondClickedDate,
+          end: secondClickedDate,
+        });
       });
     });
 
-    it('should set clicked date as end date when clicked date is after current start date', () => {
-      const { result } = renderHook(() => useCalendarPicker({}));
-      const firstClickedDate = new Date(2024, february, 1);
-      const secondClickedDate = new Date(2024, february, 2);
-      act(() => result.current.handleDayClick(firstClickedDate));
-      act(() => result.current.handleDayClick(secondClickedDate));
+    describe('Range mode', () => {
+      it('should set clicked date as start date when no slot is selected', () => {
+        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const clickedDate = new Date(2024, february, 1);
+        act(() => result.current.handleDayClick(clickedDate));
 
-      expect(result.current.selectedSlot).toEqual({
-        start: firstClickedDate,
-        end: secondClickedDate,
+        expect(result.current.selectedSlot).toEqual({ start: clickedDate, end: null });
       });
-    });
 
-    it('should clear existing slot and set clicked date as start date of new slot when a slot is already defined', () => {
-      const { result } = renderHook(() => useCalendarPicker({}));
-      const firstClickedDate = new Date(2024, february, 1);
-      const secondClickedDate = new Date(2024, february, 2);
-      const thirdClickedDate = new Date(2024, february, 3);
-      act(() => result.current.handleDayClick(firstClickedDate));
-      act(() => result.current.handleDayClick(secondClickedDate));
-      act(() => result.current.handleDayClick(thirdClickedDate));
+      it('should clear the slot when the same date is clicked', () => {
+        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const clickedDate = new Date(2024, february, 1);
+        act(() => result.current.handleDayClick(clickedDate));
+        act(() => result.current.handleDayClick(clickedDate));
 
-      expect(result.current.selectedSlot).toEqual({ start: thirdClickedDate, end: null });
+        expect(result.current.selectedSlot).toBeUndefined();
+      });
+
+      it('should set clicked date as start date and previous start date as end date when clicked date is before current start date', () => {
+        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const firstClickedDate = new Date(2024, february, 2);
+        const secondClickedDate = new Date(2024, february, 1);
+        act(() => result.current.handleDayClick(firstClickedDate));
+        act(() => result.current.handleDayClick(secondClickedDate));
+
+        expect(result.current.selectedSlot).toEqual({
+          start: secondClickedDate,
+          end: firstClickedDate,
+        });
+      });
+
+      it('should set clicked date as end date when clicked date is after current start date', () => {
+        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const firstClickedDate = new Date(2024, february, 1);
+        const secondClickedDate = new Date(2024, february, 2);
+        act(() => result.current.handleDayClick(firstClickedDate));
+        act(() => result.current.handleDayClick(secondClickedDate));
+
+        expect(result.current.selectedSlot).toEqual({
+          start: firstClickedDate,
+          end: secondClickedDate,
+        });
+      });
+
+      it('should clear existing slot and set clicked date as start date of new slot when a slot is already defined', () => {
+        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const firstClickedDate = new Date(2024, february, 1);
+        const secondClickedDate = new Date(2024, february, 2);
+        const thirdClickedDate = new Date(2024, february, 3);
+        act(() => result.current.handleDayClick(firstClickedDate));
+        act(() => result.current.handleDayClick(secondClickedDate));
+        act(() => result.current.handleDayClick(thirdClickedDate));
+
+        expect(result.current.selectedSlot).toEqual({ start: thirdClickedDate, end: null });
+      });
     });
   });
 
