@@ -1,19 +1,25 @@
 .date-picker {
-    .date-picker-input {
-        .custom-field {
-            .field-wrapper-and-status-icon {
-              .input-wrapper {
-                .trailing-content-wrapper {
-                  .trailing-content {
-                    @apply text-primary-60;
-                  }
-                }
-              }
+  position: relative;
+  width: fit-content;
+  .date-picker-input {
+    .custom-field {
+      .field-wrapper-and-status-icon {
+        .input-wrapper {
+          .trailing-content-wrapper {
+            .trailing-content {
+              @apply text-primary-60;
             }
+          }
         }
+      }
     }
+  }
 
     .calendar-picker {
+        position: absolute;
+        top: 70px;
+        left: 50%;
+        transform: translateX(-50%);
         width: fit-content;
         border-radius: 8px;
         box-shadow: 0px 13px 15px -7px rgba(31, 27, 23, 0.1), 0px 3px 6px rgba(31, 27, 23, 0.2);
@@ -70,7 +76,7 @@
 
           .calendar-wrapper {
 
-            .calendar-body {
+            .calendar-anatomy {
 
               .calendar-month-label {
                 font-size: 14px;

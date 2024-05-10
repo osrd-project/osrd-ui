@@ -1,14 +1,20 @@
+import React from 'react';
 import { StoryObj, Meta } from '@storybook/react';
-
-import '@osrd-project/ui-core/dist/theme.css';
-
 import DatePicker from '../components/inputs/datePicker/DatePicker';
+import '@osrd-project/ui-core/dist/theme.css';
 
 const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
+  decorators: [
+    (Story) => (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Story />
+      </div>
+    ),
+  ],
   args: {
     calendarPickerProps: {
-      calendarCount: 3,
+      numberOfMonths: 1,
       selectableSlot: { start: new Date(2024, 4, 3), end: new Date(2024, 6, 31) },
     },
     inputProps: {
