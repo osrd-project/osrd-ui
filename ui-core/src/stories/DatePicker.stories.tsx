@@ -12,6 +12,13 @@ const meta: Meta<typeof DatePicker> = {
       </div>
     ),
   ],
+  parameters: {
+    docs: {
+      story: {
+        height: '500px',
+      },
+    },
+  },
   args: {
     calendarPickerProps: {
       numberOfMonths: 1,
