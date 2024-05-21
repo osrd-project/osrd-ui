@@ -15,6 +15,7 @@ import { indexToColor, hexToRgb } from '../utils/colors';
 import { drawAliasedLine, drawPathExtremity } from '../utils/canvas';
 import { FONT_SIZE, WHITE_75 } from '../lib/consts';
 import { useDraw, usePicking } from '../hooks/useCanvas';
+import { CAPTION_SIZE } from './TimeCaptions';
 
 function getDirection({ points }: PathData, reverse?: boolean): 'up' | 'down' {
   if (points.length < 2) return 'down';
@@ -99,20 +100,36 @@ export const PathLayer: FC<PathLayerProps> = ({
    * render the visible path, and the segments on the picking layer.
    */
   const getPathSegments = useCallback(
-    ({ getX, getY, spaceScaleTree }: SpaceTimeChartContextType): Point[] => {
+    ({
+      getTimePixel,
+      getSpacePixel,
+      spaceScaleTree,
+      timeAxis,
+      spaceAxis,
+    }: SpaceTimeChartContextType): Point[] => {
       const res: Point[] = [];
       path.points.forEach(({ position, time }, i, a) => {
         if (!i) {
-          res.push({ x: getX(time), y: getY(position) as number });
+          res.push({
+            [timeAxis]: getTimePixel(time),
+            [spaceAxis]: getSpacePixel(position),
+          } as Point);
         } else {
           const { position: prevPosition, time: prevTime } = a[i - 1];
           const spaceBreakPoints = getSpaceBreakpoints(prevPosition, position, spaceScaleTree);
-          spaceBreakPoints.forEach((p) => {
-            const t =
-              prevTime + ((p - prevPosition) / (position - prevPosition)) * (time - prevTime);
-            res.push({ x: getX(t), y: getY(p) as number });
+          spaceBreakPoints.forEach((breakPosition) => {
+            const breakTime =
+              prevTime +
+              ((breakPosition - prevPosition) / (position - prevPosition)) * (time - prevTime);
+            res.push({
+              [timeAxis]: getTimePixel(breakTime),
+              [spaceAxis]: getSpacePixel(breakPosition),
+            } as Point);
           });
-          res.push({ x: getX(time), y: getY(position) as number });
+          res.push({
+            [timeAxis]: getTimePixel(time),
+            [spaceAxis]: getSpacePixel(position),
+          } as Point);
         }
       });
       return res;
@@ -124,16 +141,21 @@ export const PathLayer: FC<PathLayerProps> = ({
    * This function draws the stops of the path on the operational points.
    */
   const drawPauses = useCallback<DrawingFunction>(
-    (ctx, { getX, getY, operationalPoints }) => {
+    (ctx, { getTimePixel, getSpacePixel, operationalPoints, swapAxis }) => {
       const stopPositions = new Set(operationalPoints.map((p) => p.position));
       path.points.forEach(({ position, time }, i, a) => {
         if (i) {
           const { position: prevPosition, time: prevTime } = a[i - 1];
           if (prevPosition === position && stopPositions.has(position)) {
-            const y = getY(position) as number;
+            const spacePixel = getSpacePixel(position);
             ctx.beginPath();
-            ctx.moveTo(getX(prevTime), y);
-            ctx.lineTo(getX(time), y);
+            if (!swapAxis) {
+              ctx.moveTo(getTimePixel(prevTime), spacePixel);
+              ctx.lineTo(getTimePixel(time), spacePixel);
+            } else {
+              ctx.moveTo(spacePixel, getTimePixel(prevTime));
+              ctx.lineTo(spacePixel, getTimePixel(time));
+            }
             ctx.stroke();
           }
         }
@@ -146,14 +168,19 @@ export const PathLayer: FC<PathLayerProps> = ({
    * This function draws the label of the path.
    */
   const drawLabel = useCallback(
-    (ctx: CanvasRenderingContext2D, label: string, color: string, points: Point[]) => {
+    (
+      ctx: CanvasRenderingContext2D,
+      { width, height, swapAxis }: SpaceTimeChartContextType,
+      label: string,
+      color: string,
+      points: Point[]
+    ) => {
       if (!label) return;
 
-      const width = ctx.canvas.width;
-      const height = ctx.canvas.height;
-
-      const firstPointOnScreenIndex = points.findIndex(
-        ({ x, y }) => inRange(x, 0, width) && inRange(y, 0, height)
+      const firstPointOnScreenIndex = points.findIndex(({ x, y }) =>
+        !swapAxis
+          ? inRange(x, 0, width) && inRange(y, 0, height - CAPTION_SIZE)
+          : inRange(x, CAPTION_SIZE, width) && inRange(y, 0, height)
       );
 
       if (firstPointOnScreenIndex < 0) return;
@@ -168,11 +195,17 @@ export const PathLayer: FC<PathLayerProps> = ({
       if (firstPointOnScreenIndex === 0) {
         if (next) angle = Math.atan2(next.y - curr.y, next.x - curr.x);
       } else {
-        // Find first point with a positive x:
-        position = {
-          x: 0,
-          y: curr.y - (curr.x * (curr.y - prev.y)) / (curr.x - prev.x),
-        };
+        if (!swapAxis) {
+          position = {
+            x: 0,
+            y: curr.y - (curr.x * (curr.y - prev.y)) / (curr.x - prev.x),
+          };
+        } else {
+          position = {
+            y: 0,
+            x: curr.x - (curr.y * (curr.x - prev.x)) / (curr.y - prev.y),
+          };
+        }
 
         angle = Math.atan2(curr.y - position.y, curr.x - position.x);
       }
@@ -203,15 +236,31 @@ export const PathLayer: FC<PathLayerProps> = ({
    * This function draws the extremities of the path.
    */
   const drawExtremities = useCallback<DrawingFunction>(
-    (ctx, { getX, getY }) => {
+    (ctx, { getTimePixel, getSpacePixel, swapAxis }) => {
       const pathDirection = getDirection(path);
       const from = path.points[0];
       const fromEnd = path.fromEnd || DEFAULT_PATH_END;
       const to = last(path.points) as DataPoint;
       const toEnd = path.toEnd || DEFAULT_PATH_END;
 
-      drawPathExtremity(ctx, getX(from.time), getY(from.position), 'from', pathDirection, fromEnd);
-      drawPathExtremity(ctx, getX(to.time), getY(to.position), 'to', pathDirection, toEnd);
+      drawPathExtremity(
+        ctx,
+        getTimePixel(from.time),
+        getSpacePixel(from.position),
+        swapAxis,
+        'from',
+        pathDirection,
+        fromEnd
+      );
+      drawPathExtremity(
+        ctx,
+        getTimePixel(to.time),
+        getSpacePixel(to.position),
+        swapAxis,
+        'to',
+        pathDirection,
+        toEnd
+      );
     },
     [path]
   );
@@ -250,7 +299,7 @@ export const PathLayer: FC<PathLayerProps> = ({
       drawExtremities(ctx, stcContext);
 
       // Draw label:
-      drawLabel(ctx, path.label, color, segments);
+      drawLabel(ctx, stcContext, path.label, color, segments);
     },
     [color, drawPauses, level, getPathSegments, drawExtremities, drawLabel, path.label]
   );
