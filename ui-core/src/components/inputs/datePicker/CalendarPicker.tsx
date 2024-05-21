@@ -11,6 +11,12 @@ export type CalendarPickerProps = {
   selectableSlot?: CalendarSlot;
   numberOfMonths?: 1 | 2 | 3;
   mode?: 'single' | 'range';
+  onDateChange: (date: Date | string) => void;
+  modalPosition: {
+    top: number;
+    left: number;
+  };
+  calendarPickerRef: React.RefObject<HTMLDivElement>;
 };
 
 const CalendarPicker: React.FC<CalendarPickerProps> = ({
@@ -19,6 +25,9 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
   selectableSlot,
   numberOfMonths = 1,
   mode = 'single',
+  onDateChange,
+  modalPosition,
+  calendarPickerRef,
 }) => {
   const {
     selectedSlot,
@@ -35,10 +44,15 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
     selectableSlot,
     numberOfMonths,
     mode,
+    onDateChange,
   });
 
   return (
-    <div className="calendar-picker">
+    <div
+      ref={calendarPickerRef}
+      className="calendar-picker"
+      style={{ top: modalPosition?.top, left: modalPosition?.left }}
+    >
       {showNavigationBtn && (
         <span
           className={cx('calendar-navigation-btn', 'previous', {

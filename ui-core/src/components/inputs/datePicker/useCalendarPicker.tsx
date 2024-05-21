@@ -9,7 +9,8 @@ export default function useCalendarPicker({
   selectableSlot,
   numberOfMonths = 1,
   mode = 'single',
-}: CalendarPickerProps) {
+  onDateChange,
+}: Omit<CalendarPickerProps, 'modalPosition' | 'calendarPickerRef'>) {
   if (initialSelectedSlot && !isValidSlot(initialSelectedSlot)) {
     throw new Error(
       'Invalid selectedSlot: If start and end are defined, the start date must be before the end date.'
@@ -99,26 +100,32 @@ export default function useCalendarPicker({
     if (mode === 'single') {
       // Spec 0
       setSelectedSlot({ start: clickedDate, end: clickedDate });
+      onDateChange?.(clickedDate);
       return;
     }
 
     if (!selectedSlot || selectedSlot?.start === null) {
       // Spec 1
       setSelectedSlot({ start: clickedDate, end: null });
+      onDateChange?.(clickedDate);
     } else if (!selectedSlot.end) {
       if (clickedDate.getTime() === selectedSlot.start.getTime()) {
         // Spec 2
         setSelectedSlot(undefined);
+        onDateChange?.('');
       } else if (clickedDate.getTime() < selectedSlot.start.getTime()) {
         // Spec 3
         setSelectedSlot({ start: clickedDate, end: selectedSlot.start });
+        onDateChange?.(clickedDate);
       } else {
         // Spec 4
         setSelectedSlot({ start: selectedSlot.start, end: clickedDate });
+        onDateChange?.(clickedDate);
       }
     } else {
       // Spec 5
       setSelectedSlot({ start: clickedDate, end: null });
+      onDateChange?.(clickedDate);
     }
   };
 
