@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import React, { FC, useState } from 'react';
+import React, { FC, useMemo, useState } from 'react';
 import type { Meta } from '@storybook/react';
 
 import { OPERATIONAL_POINTS, PATHS } from './assets/paths';
@@ -9,6 +9,7 @@ import { getDiff } from '../utils/vectors';
 import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL, zoom } from './utils';
 
 import './tailwind-mockup.css';
+import { keyBy } from 'lodash';
 
 function delayPath<T extends PathData>(path: T, newTimeOrigin: number): T {
   const delay = newTimeOrigin - path.points[0].time;
@@ -28,16 +29,17 @@ const Wrapper: FC<{
   pickingTolerance: number;
 }> = ({ enableDragPaths, pickingTolerance, enableMultiSelection, spaceScaleType }) => {
   const [paths, setPaths] = useState(PATHS);
+  const pathsDict = useMemo(() => keyBy(paths, 'id'), [paths]);
   const [state, setState] = useState<{
     xOffset: number;
     yOffset: number;
     xZoomLevel: number;
     yZoomLevel: number;
-    selection: Set<number> | null;
+    selection: Set<string> | null;
     panTarget:
       | null
       | { type: 'stage'; initialOffset: Point }
-      | { type: 'items'; initialTimeOrigins: Record<number, number> };
+      | { type: 'items'; initialTimeOrigins: Record<string, number> };
     hoveredPath: HoveredItem | null;
   }>({
     xOffset: 0,
@@ -85,22 +87,25 @@ const Wrapper: FC<{
           else if (!selection) {
             setState({
               ...state,
-              selection: new Set([hoveredPath.index]),
+              selection: new Set([hoveredPath.element.path]),
             });
           }
           // Handle single selection:
           else if (!enableMultiSelection || !event.ctrlKey) {
             setState({
               ...state,
-              selection: selection.has(hoveredPath.index) ? null : new Set([hoveredPath.index]),
+              selection: selection.has(hoveredPath.element.path)
+                ? null
+                : new Set([hoveredPath.element.path]),
             });
           }
           // Handle multi selection:
           else {
             const newSelection = new Set(selection);
 
-            if (newSelection.has(hoveredPath.index)) newSelection.delete(hoveredPath.index);
-            else newSelection.add(hoveredPath.index);
+            if (newSelection.has(hoveredPath.element.path))
+              newSelection.delete(hoveredPath.element.path);
+            else newSelection.add(hoveredPath.element.path);
 
             setState({ ...state, selection: newSelection.size ? newSelection : null });
           }
@@ -121,18 +126,18 @@ const Wrapper: FC<{
           }
           // Start dragging selection
           else if (!panTarget && enableDragPaths && hoveredPath) {
-            const newSelection = selection?.has(hoveredPath.index)
+            const newSelection = selection?.has(hoveredPath.element.path)
               ? selection
-              : new Set([hoveredPath.index]);
+              : new Set([hoveredPath.element.path]);
             setState((state) => ({
               ...state,
               selection: newSelection,
               panTarget: {
                 type: 'items',
                 initialTimeOrigins: Array.from(newSelection).reduce(
-                  (iter, index) => ({
+                  (iter, id) => ({
                     ...iter,
-                    [index]: paths[index].points[0].time,
+                    [id]: pathsDict[id].points[0].time,
                   }),
                   {}
                 ),
@@ -168,8 +173,10 @@ const Wrapper: FC<{
             const { initialTimeOrigins } = panTarget;
             const timeDiff = data.time - initialData.time;
             setPaths((paths) =>
-              paths.map((path, i) =>
-                initialTimeOrigins[i] ? delayPath(path, initialTimeOrigins[i] + timeDiff) : path
+              paths.map((path) =>
+                initialTimeOrigins[path.id]
+                  ? delayPath(path, initialTimeOrigins[path.id] + timeDiff)
+                  : path
               )
             );
           }
@@ -181,21 +188,20 @@ const Wrapper: FC<{
           }));
         }}
       >
-        {paths.map((path, i) => (
+        {paths.map((path) => (
           <PathLayer
             key={path.id}
-            index={i}
             path={path}
             color={path.color}
             pickingTolerance={pickingTolerance}
             level={
               state.panTarget?.type === 'items'
-                ? state.selection?.has(i)
+                ? state.selection?.has(path.id)
                   ? 1
                   : 4
-                : state.selection?.has(i)
+                : state.selection?.has(path.id)
                   ? 1
-                  : state.hoveredPath?.index === i
+                  : state.hoveredPath?.element.path === path.id
                     ? 1
                     : state.selection?.size
                       ? 3

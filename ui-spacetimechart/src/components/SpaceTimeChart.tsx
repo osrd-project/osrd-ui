@@ -2,7 +2,12 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import cx from 'classnames';
 
 import { CanvasContext, MouseContext, SpaceTimeChartContext } from '../lib/context';
-import { MouseContextType, SpaceTimeChartContextType, SpaceTimeChartProps } from '../lib/types';
+import {
+  MouseContextType,
+  PickingElement,
+  SpaceTimeChartContextType,
+  SpaceTimeChartProps,
+} from '../lib/types';
 import {
   getDataToPoint,
   getPixelToSpace,
@@ -16,8 +21,10 @@ import TimeGraduations from './TimeGraduations';
 import TimeCaptions from './TimeCaptions';
 import SpaceGraduations from './SpaceGraduations';
 import { useSize } from '../hooks/useSize';
-import { useMouse } from '../hooks/useMouse';
+import { useMouseTracking } from '../hooks/useMouseTracking';
 import { useCanvas } from '../hooks/useCanvas';
+import { useMouseInteractions } from '../hooks/useMouseInteractions';
+import { snapPosition } from '../utils/snapping';
 
 export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartProps) => {
   const {
@@ -31,6 +38,7 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
     swapAxis,
     onHoveredChildUpdate,
     children,
+    enableSnapping,
     /* eslint-disable @typescript-eslint/no-unused-vars */
     onPan,
     onZoom,
@@ -80,6 +88,15 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
     const getSpace = getPixelToSpace(spaceOrigin, spacePixelOffset, spaceScaleTree);
     const getData = getPointToData(getTime, getSpace);
 
+    const pickingElements: PickingElement[] = [];
+    const resetPickingElements = () => {
+      pickingElements.length = 0;
+    };
+    const registerPickingElement = (element: PickingElement) => {
+      pickingElements.push(element);
+      return pickingElements.length - 1;
+    };
+
     return {
       fingerprint,
       width,
@@ -90,6 +107,9 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
       getTime,
       getSpace,
       getData,
+      pickingElements,
+      resetPickingElements,
+      registerPickingElement,
       operationalPoints,
       spaceOrigin,
       spaceScaleTree,
@@ -100,20 +120,36 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
       timeAxis: !swapAxis ? 'x' : 'y',
       spaceAxis: !swapAxis ? 'y' : 'x',
       swapAxis: !!swapAxis,
+      enableSnapping: !!enableSnapping,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fingerprint]);
 
-  const { position, down, isHover } = useMouse(root, props, contextState.getData);
+  const mouseState = useMouseTracking(root);
+  const { position, down, isHover } = mouseState;
+  const { canvasContext, hoveredItem } = useCanvas(canvasesRoot, contextState, position);
+
   const mouseContext = useMemo<MouseContextType>(() => {
+    const snappedPosition = enableSnapping
+      ? snapPosition(mouseState.position, hoveredItem)
+      : mouseState.position;
+
     return {
-      position,
       down,
       isHover,
-      data: contextState.getData(position),
+      position: snappedPosition,
+      hoveredItem: hoveredItem,
+      data: contextState.getData(snappedPosition),
     };
-  }, [position, down, isHover, contextState]);
-  const { canvasContext, hoveredItem } = useCanvas(canvasesRoot, contextState, position);
+  }, [enableSnapping, mouseState.position, hoveredItem, down, isHover, contextState]);
+
+  // Handle interactions:
+  useMouseInteractions(
+    root,
+    mouseContext,
+    { onPan, onZoom, onClick, onMouseMove },
+    contextState.getData
+  );
 
   // Handle onHoveredChildUpdate:
   useEffect(() => {
