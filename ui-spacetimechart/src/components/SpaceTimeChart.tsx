@@ -39,6 +39,8 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
     onHoveredChildUpdate,
     children,
     enableSnapping,
+    hideGrid,
+    hidePathsLabels,
     /* eslint-disable @typescript-eslint/no-unused-vars */
     onPan,
     onZoom,
@@ -63,11 +65,27 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
       xOffset,
       yOffset,
       swapAxis,
+      hideGrid,
+      hidePathsLabels,
     });
-  }, [width, height, spaceOrigin, spaceScales, timeOrigin, timeScale, xOffset, yOffset, swapAxis]);
+  }, [
+    width,
+    height,
+    spaceOrigin,
+    spaceScales,
+    timeOrigin,
+    timeScale,
+    xOffset,
+    yOffset,
+    swapAxis,
+    hideGrid,
+    hidePathsLabels,
+  ]);
 
   const contextState: SpaceTimeChartContextType = useMemo(() => {
     const spaceScaleTree = spaceScalesToBinaryTree(spaceOrigin, spaceScales);
+    const timeAxis = !swapAxis ? 'x' : 'y';
+    const spaceAxis = !swapAxis ? 'y' : 'x';
 
     // Data translation helpers:
     let timePixelOffset;
@@ -83,10 +101,10 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
 
     const getTimePixel = getTimeToPixel(timeOrigin, timePixelOffset, timeScale);
     const getSpacePixel = getSpaceToPixel(spaceOrigin, spacePixelOffset, spaceScaleTree);
-    const getPoint = getDataToPoint(getTimePixel, getSpacePixel);
+    const getPoint = getDataToPoint(getTimePixel, getSpacePixel, timeAxis, spaceAxis);
     const getTime = getPixelToTime(timeOrigin, timePixelOffset, timeScale);
     const getSpace = getPixelToSpace(spaceOrigin, spacePixelOffset, spaceScaleTree);
-    const getData = getPointToData(getTime, getSpace);
+    const getData = getPointToData(getTime, getSpace, timeAxis, spaceAxis);
 
     const pickingElements: PickingElement[] = [];
     const resetPickingElements = () => {
@@ -117,10 +135,12 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
       timeScale,
       timePixelOffset,
       spacePixelOffset,
-      timeAxis: !swapAxis ? 'x' : 'y',
-      spaceAxis: !swapAxis ? 'y' : 'x',
+      timeAxis,
+      spaceAxis,
       swapAxis: !!swapAxis,
       enableSnapping: !!enableSnapping,
+      hideGrid: !!hideGrid,
+      hidePathsLabels: !!hidePathsLabels,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fingerprint]);
@@ -165,9 +185,13 @@ export const SpaceTimeChart: FC<SpaceTimeChartProps> = (props: SpaceTimeChartPro
       <SpaceTimeChartContext.Provider value={contextState}>
         <CanvasContext.Provider value={canvasContext}>
           <MouseContext.Provider value={mouseContext}>
-            <SpaceGraduations />
-            <TimeGraduations />
-            <TimeCaptions />
+            {!hideGrid && (
+              <>
+                <SpaceGraduations />
+                <TimeGraduations />
+                <TimeCaptions />
+              </>
+            )}
             {children}
           </MouseContext.Provider>
         </CanvasContext.Provider>

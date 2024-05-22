@@ -12,6 +12,7 @@ import {
   Point,
   DataToPoint,
   DataPoint,
+  Axis,
 } from '../lib/types';
 
 /**
@@ -147,7 +148,7 @@ export function getPixelToTime(
   pixelOffset: number,
   timeScale: number
 ): PixelToTime {
-  return (x: number) => (x - pixelOffset) * timeScale + timeOrigin;
+  return (timePixel: number) => (timePixel - pixelOffset) * timeScale + timeOrigin;
 }
 
 export function getSpaceToPixel(
@@ -169,24 +170,38 @@ export function getPixelToSpace(
   pixelOffset: number,
   binaryTree: NormalizedScaleTree
 ): PixelToSpace {
-  return (y: number) => {
-    const { from, pixelFrom, coefficient } = getNormalizedScaleAtPixel(y - pixelOffset, binaryTree);
-    return spaceOrigin + from + (y - pixelOffset - pixelFrom) * coefficient;
+  return (spacePixel: number) => {
+    const { from, pixelFrom, coefficient } = getNormalizedScaleAtPixel(
+      spacePixel - pixelOffset,
+      binaryTree
+    );
+    return spaceOrigin + from + (spacePixel - pixelOffset - pixelFrom) * coefficient;
   };
 }
 
-export function getPointToData(getTime: PixelToTime, getSpace: PixelToSpace): PointToData {
-  return ({ x, y }: Point) => ({
-    time: getTime(x),
-    position: getSpace(y),
+export function getPointToData(
+  getTime: PixelToTime,
+  getSpace: PixelToSpace,
+  timeAxis: Axis,
+  spaceAxis: Axis
+): PointToData {
+  return (point: Point) => ({
+    time: getTime(point[timeAxis]),
+    position: getSpace(point[spaceAxis]),
   });
 }
 
-export function getDataToPoint(getX: TimeToPixel, getY: SpaceToPixel): DataToPoint {
-  return ({ time, position }: DataPoint) => ({
-    x: getX(time),
-    y: getY(position),
-  });
+export function getDataToPoint(
+  getTimePixel: TimeToPixel,
+  getSpacePixel: SpaceToPixel,
+  timeAxis: Axis,
+  spaceAxis: Axis
+): DataToPoint {
+  return ({ time, position }: DataPoint) =>
+    ({
+      [timeAxis]: getTimePixel(time),
+      [spaceAxis]: getSpacePixel(position),
+    }) as Point;
 }
 
 /**

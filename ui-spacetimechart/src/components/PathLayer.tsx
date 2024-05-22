@@ -321,7 +321,7 @@ export const PathLayer: FC<PathLayerProps> = ({
       drawExtremities(ctx, stcContext);
 
       // Draw label:
-      drawLabel(ctx, stcContext, path.label, color, segments);
+      if (!stcContext.hidePathsLabels) drawLabel(ctx, stcContext, path.label, color, segments);
     },
     [color, drawPauses, level, getPathSegments, drawExtremities, drawLabel, path.label]
   );
