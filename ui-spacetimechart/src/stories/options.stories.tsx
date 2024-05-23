@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import React, { FC, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import type { Meta } from '@storybook/react';
 
 import { OPERATIONAL_POINTS, PATHS } from './lib/paths';
@@ -17,6 +17,30 @@ import { Point } from '../lib/types';
 
 import './lib/tailwind-mockup.css';
 import { MouseTracker } from './lib/components';
+import { CanvasContext } from '../lib/context';
+import FileSaver from 'file-saver';
+
+const ScreenshotButton: FC = () => {
+  const { captureCanvases } = useContext(CanvasContext);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
+      }}
+    >
+      <button
+        onClick={() =>
+          captureCanvases().then((blob) => FileSaver.saveAs(blob, 'space-time-chart.png'))
+        }
+      >
+        Export to PNG
+      </button>
+    </div>
+  );
+};
 
 /**
  * This story aims at showcasing how to handle panning and zooming in a SpaceTimeChart.
@@ -45,7 +69,10 @@ const Wrapper: FC<{
   return (
     <div className="inset-0">
       <SpaceTimeChart
-        className={cx('inset-0 absolute p-0 m-0', state.panning && 'cursor-grabbing')}
+        className={cx(
+          'inset-0 absolute overflow-hidden p-0 m-0',
+          state.panning && 'cursor-grabbing'
+        )}
         enableSnapping={enableSnapping}
         hideGrid={hideGrid}
         hidePathsLabels={hidePathsLabels}
@@ -118,6 +145,7 @@ const Wrapper: FC<{
           <PathLayer key={path.id} path={path} color={path.color} />
         ))}
         <MouseTracker />
+        <ScreenshotButton />
       </SpaceTimeChart>
     </div>
   );

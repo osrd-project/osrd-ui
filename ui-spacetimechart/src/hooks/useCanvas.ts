@@ -17,6 +17,7 @@ import {
 import { useSize } from './useSize';
 import { colorToIndex, rgbToHex } from '../utils/colors';
 import { CanvasContext } from '../lib/context';
+import getPNGBlob from '../utils/png';
 
 const PICKING = 'picking';
 const RENDERING = 'rendering';
@@ -155,6 +156,13 @@ export function useCanvas(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const captureCanvases = useCallback(() => {
+    return getPNGBlob(
+      canvasesRef.current,
+      LAYERS.map((layer) => `${RENDERING}-${layer}`)
+    );
+  }, []);
+
   // Create all canvas layers:
   useEffect(() => {
     if (!dom) return;
@@ -242,8 +250,8 @@ export function useCanvas(
 
   // Keep the canvas context up to date:
   const canvasContext = useMemo<CanvasContextType>(
-    () => ({ register, unregister }),
-    [register, unregister]
+    () => ({ register, unregister, captureCanvases }),
+    [register, unregister, captureCanvases]
   );
 
   return {
