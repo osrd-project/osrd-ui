@@ -13,7 +13,7 @@ import {
 import { getSpaceBreakpoints } from '../utils/scales';
 import { indexToColor, hexToRgb } from '../utils/colors';
 import { drawAliasedDisc, drawAliasedLine, drawPathExtremity } from '../utils/canvas';
-import { FONT_SIZE, WHITE_75 } from '../lib/consts';
+import { FONT_SIZE } from '../lib/consts';
 import { useDraw, usePicking } from '../hooks/useCanvas';
 import { CAPTION_SIZE } from './TimeCaptions';
 
@@ -192,7 +192,15 @@ export const PathLayer: FC<PathLayerProps> = ({
   const drawLabel = useCallback(
     (
       ctx: CanvasRenderingContext2D,
-      { width, height, swapAxis }: SpaceTimeChartContextType,
+      {
+        width,
+        height,
+        swapAxis,
+        theme: {
+          background,
+          pathsStyles: { font },
+        },
+      }: SpaceTimeChartContextType,
       label: string,
       color: string,
       points: Point[]
@@ -236,7 +244,7 @@ export const PathLayer: FC<PathLayerProps> = ({
       ctx.save();
       ctx.translate(position.x, position.y);
       ctx.rotate(angle);
-      ctx.font = `${FONT_SIZE}px IBM Plex Mono`;
+      ctx.font = font;
       ctx.textAlign = 'start';
 
       const dx = 5;
@@ -244,10 +252,12 @@ export const PathLayer: FC<PathLayerProps> = ({
       const padding = 2;
       const measure = ctx.measureText(label);
       const w = measure.width + 2 * padding;
-      const h = FONT_SIZE + 2 * padding;
-      ctx.fillStyle = WHITE_75;
+      const h = measure.actualBoundingBoxAscent + measure.actualBoundingBoxDescent + 2 * padding;
+      ctx.globalAlpha = 0.75;
+      ctx.fillStyle = background;
       ctx.fillRect(dx - padding, dy - h + padding, w, h);
       ctx.fillStyle = color;
+      ctx.globalAlpha = 1;
       ctx.fillText(label, dx, dy - FONT_SIZE / 4);
       ctx.restore();
     },

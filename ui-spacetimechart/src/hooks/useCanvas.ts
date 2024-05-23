@@ -159,7 +159,8 @@ export function useCanvas(
   const captureCanvases = useCallback(() => {
     return getPNGBlob(
       canvasesRef.current,
-      LAYERS.map((layer) => `${RENDERING}-${layer}`)
+      LAYERS.map((layer) => `${RENDERING}-${layer}`),
+      stcContextRef.current.theme.background
     );
   }, []);
 
