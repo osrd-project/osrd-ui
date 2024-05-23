@@ -2,7 +2,7 @@ import cx from 'classnames';
 import React, { FC, useState } from 'react';
 import type { Meta } from '@storybook/react';
 
-import { OPERATIONAL_POINTS, PATHS } from './assets/paths';
+import { OPERATIONAL_POINTS, PATHS } from './lib/paths';
 import { SpaceTimeChart, PathLayer } from '../';
 import {
   MAX_X_ZOOM,
@@ -11,11 +11,11 @@ import {
   MIN_Y_ZOOM,
   X_ZOOM_LEVEL,
   Y_ZOOM_LEVEL,
-} from './utils';
+} from './lib/utils';
 import { getDiff } from '../utils/vectors';
 import { Point } from '../lib/types';
 
-import './tailwind-mockup.css';
+import './lib/tailwind-mockup.css';
 
 /**
  * This story aims at showcasing how to handle panning and zooming in a SpaceTimeChart.

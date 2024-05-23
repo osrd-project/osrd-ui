@@ -1,4 +1,4 @@
-import { SpaceTimeChartProps } from '../lib/types';
+import { SpaceTimeChartProps } from '../../lib/types';
 
 const EXTREME_ZOOM = 200;
 export const MIN_X_ZOOM = 1 / EXTREME_ZOOM;

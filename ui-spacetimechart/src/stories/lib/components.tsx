@@ -1,8 +1,8 @@
 import React, { FC, useContext } from 'react';
-import { DataPoint, Point } from '../lib/types';
-import { WHITE_75 } from '../lib/consts';
+import { DataPoint, Point } from '../../lib/types';
+import { WHITE_75 } from '../../lib/consts';
 import { round } from 'lodash';
-import { MouseContext, SpaceTimeChartContext } from '../lib/context';
+import { MouseContext, SpaceTimeChartContext } from '../../lib/context';
 import { formatTimeLength } from './utils';
 
 /**

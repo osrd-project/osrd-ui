@@ -2,12 +2,12 @@ import cx from 'classnames';
 import React, { FC, useState } from 'react';
 import type { Meta } from '@storybook/react';
 
-import { OPERATIONAL_POINTS, PATHS } from './assets/paths';
+import { OPERATIONAL_POINTS, PATHS } from './lib/paths';
 import { SpaceTimeChart, PathLayer } from '../';
 import { DataPoint, Point } from '../lib/types';
 import { getDiff } from '../utils/vectors';
-import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL, zoom } from './utils';
-import { MouseTracker } from './components';
+import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL, zoom } from './lib/utils';
+import { MouseTracker } from './lib/components';
 
 /**
  * This story aims at showcasing how to measure times and distances in a SpaceTimeChart.

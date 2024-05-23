@@ -2,13 +2,13 @@ import cx from 'classnames';
 import React, { FC, useMemo, useState } from 'react';
 import type { Meta } from '@storybook/react';
 
-import { OPERATIONAL_POINTS, PATHS } from './assets/paths';
+import { OPERATIONAL_POINTS, PATHS } from './lib/paths';
 import { SpaceTimeChart, PathLayer } from '../';
 import { HoveredItem, PathData, Point } from '../lib/types';
 import { getDiff } from '../utils/vectors';
-import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL, zoom } from './utils';
+import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL, zoom } from './lib/utils';
 
-import './tailwind-mockup.css';
+import './lib/tailwind-mockup.css';
 import { keyBy } from 'lodash';
 
 function delayPath<T extends PathData>(path: T, newTimeOrigin: number): T {
