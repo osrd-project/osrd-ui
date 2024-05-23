@@ -73,7 +73,7 @@ const Wrapper: FC<{
         xOffset={state.xOffset}
         yOffset={state.yOffset}
         onClick={({ event }) => {
-          const { hoveredPath, selection, panTarget } = state;
+          const { hoveredPath, selected, panTarget } = state;
 
           // Skip events when something is being dragged or panned:
           if (panTarget) return;
@@ -81,40 +81,40 @@ const Wrapper: FC<{
           // Unselect everything when clicking stage (unless multi-selection is enabled and the ctrl key is down):
           if (!hoveredPath) {
             if (!enableMultiSelection || !event.ctrlKey)
-              setState((state) => ({ ...state, selection: null }));
+              setState((state) => ({ ...state, selected: null }));
           }
           // Select item when nothing is selected:
-          else if (!selection) {
+          else if (!selected) {
             setState({
               ...state,
-              selection: new Set([hoveredPath.element.path]),
+              selected: new Set([hoveredPath.element.path]),
             });
           }
           // Handle single selection:
           else if (!enableMultiSelection || !event.ctrlKey) {
             setState({
               ...state,
-              selection: selection.has(hoveredPath.element.path)
+              selected: selected.has(hoveredPath.element.path)
                 ? null
                 : new Set([hoveredPath.element.path]),
             });
           }
           // Handle multi selection:
           else {
-            const newSelection = new Set(selection);
+            const newSelection = new Set(selected);
 
             if (newSelection.has(hoveredPath.element.path))
               newSelection.delete(hoveredPath.element.path);
             else newSelection.add(hoveredPath.element.path);
 
-            setState({ ...state, selection: newSelection.size ? newSelection : null });
+            setState({ ...state, selected: newSelection.size ? newSelection : null });
           }
         }}
         onHoveredChildUpdate={({ item }) => {
           setState((state) => ({ ...state, hoveredPath: item }));
         }}
         onPan={({ initialPosition, position, initialData, data, isPanning }) => {
-          const { panTarget, hoveredPath, selection } = state;
+          const { panTarget, hoveredPath, selected } = state;
           const diff = getDiff(initialPosition, position);
 
           // Stop dragging or panning:
@@ -126,12 +126,12 @@ const Wrapper: FC<{
           }
           // Start dragging selection
           else if (!panTarget && enableDragPaths && hoveredPath) {
-            const newSelection = selection?.has(hoveredPath.element.path)
-              ? selection
+            const newSelection = selected?.has(hoveredPath.element.path)
+              ? selected
               : new Set([hoveredPath.element.path]);
             setState((state) => ({
               ...state,
-              selection: newSelection,
+              selected: newSelection,
               panTarget: {
                 type: 'items',
                 initialTimeOrigins: Array.from(newSelection).reduce(
@@ -196,14 +196,14 @@ const Wrapper: FC<{
             pickingTolerance={pickingTolerance}
             level={
               state.panTarget?.type === 'items'
-                ? state.selection?.has(path.id)
+                ? state.selected?.has(path.id)
                   ? 1
                   : 4
-                : state.selection?.has(path.id)
+                : state.selected?.has(path.id)
                   ? 1
                   : state.hoveredPath?.element.path === path.id
                     ? 1
-                    : state.selection?.size
+                    : state.selected?.size
                       ? 3
                       : 2
             }
