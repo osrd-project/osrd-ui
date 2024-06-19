@@ -3,6 +3,10 @@ import { StoryObj, Meta } from '@storybook/react';
 import DatePicker from '../components/inputs/datePicker/DatePicker';
 import '@osrd-project/ui-core/dist/theme.css';
 
+const startSelectableDate = new Date();
+const endSelectableDate = new Date(startSelectableDate);
+endSelectableDate.setMonth(endSelectableDate.getMonth() + 3);
+
 const meta: Meta<typeof DatePicker> = {
   component: DatePicker,
   decorators: [
@@ -22,7 +26,7 @@ const meta: Meta<typeof DatePicker> = {
   args: {
     calendarPickerProps: {
       numberOfMonths: 1,
-      selectableSlot: { start: new Date(2024, 4, 3), end: new Date(2024, 6, 31) },
+      selectableSlot: { start: startSelectableDate, end: endSelectableDate },
     },
     inputProps: {
       id: 'date-picker',

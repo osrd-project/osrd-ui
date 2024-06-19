@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import useCalendarPicker from '../useCalendarPicker';
+import { generateSequentialDates } from '../utils';
 
 describe('useCalendarPicker', () => {
   const january = 0;
@@ -13,11 +14,7 @@ describe('useCalendarPicker', () => {
     it('should initialize with the correct default values', () => {
       const { result } = renderHook(() => useCalendarPicker({}));
 
-      const expectedDates = Array.from({ length: 1 }).map((_, index) => {
-        const month = new Date().getMonth() + index;
-        const year = new Date().getFullYear() + Math.floor(month / 12);
-        return new Date(year, month % 12, 1);
-      });
+      const expectedDates = generateSequentialDates(new Date(), 1);
 
       expect(result.current.displayedMonthsStartDates).toEqual(expectedDates);
       expect(result.current.showNavigationBtn).toEqual(true);

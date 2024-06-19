@@ -5,6 +5,7 @@ import {
   getAllDatesInMonth,
   isSameDay,
   isWithinInterval,
+  normalizeDate,
 } from '../utils';
 import { describe, expect, it } from 'vitest';
 
@@ -145,7 +146,7 @@ describe('isWithinInterval', () => {
 
   it('should return true if date is within slot', () => {
     const date = new Date(2024, 1, 2, 12);
-    const slot = { start: new Date(2024, 1, 2), end: new Date(2024, 1, 3) };
+    const slot = { start: new Date(2024, 1, 2, 13), end: new Date(2024, 1, 3) };
     expect(isWithinInterval(date, slot)).toBe(true);
   });
 
@@ -165,5 +166,29 @@ describe('isWithinInterval', () => {
     const date = new Date(2024, 1, 2);
     const slot = { start: null, end: null };
     expect(isWithinInterval(date, slot)).toBe(true);
+  });
+});
+
+describe('normalizeDate', () => {
+  it('should normalize a date to midnight', () => {
+    const inputDate = new Date(2023, 3, 10, 15, 30, 45); // 10 Avril 2023, 15:30:45
+    const expectedDate = new Date(2023, 3, 10); // 10 Avril 2023, 00:00:00
+    expect(normalizeDate(inputDate)).toEqual(expectedDate);
+  });
+
+  it('should keep the year, month, and day of the input date', () => {
+    const inputDate = new Date(2023, 3, 10);
+    const normalizedDate = normalizeDate(inputDate);
+    expect(normalizedDate.getFullYear()).toBe(2023);
+    expect(normalizedDate.getMonth()).toBe(3);
+    expect(normalizedDate.getDate()).toBe(10);
+  });
+
+  it('should reset hours, minutes, and seconds to zero', () => {
+    const inputDate = new Date(2023, 3, 10, 23, 59, 59);
+    const normalizedDate = normalizeDate(inputDate);
+    expect(normalizedDate.getHours()).toBe(0);
+    expect(normalizedDate.getMinutes()).toBe(0);
+    expect(normalizedDate.getSeconds()).toBe(0);
   });
 });

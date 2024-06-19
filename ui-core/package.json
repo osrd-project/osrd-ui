@@ -43,6 +43,10 @@
     "use-mask-input": "^3.3.7"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.17",
     "jsdom": "^24.0.0",
     "postcss": "^8.4.37",
