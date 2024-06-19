@@ -8,6 +8,9 @@
               @apply text-primary-60;
             }
           }
+          .input {
+            caret-color: transparent;
+          }
         }
       }
     }

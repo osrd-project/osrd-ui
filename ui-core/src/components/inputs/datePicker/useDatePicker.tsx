@@ -11,7 +11,7 @@ const MODAL_VERTICAL_OFFSET = 3;
 const INPUT_FORMAT = 'dd/mm/yy';
 
 export default function useDatePicker({ calendarPickerProps, inputProps }: DatePickerProps) {
-  const [showPicker, toggleShowPicker] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(
     calendarPickerProps.selectedSlot
@@ -19,7 +19,7 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
 
   const calendarPickerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  useClickOutside(calendarPickerRef, () => toggleShowPicker(false));
+  useClickOutside(calendarPickerRef, () => setShowPicker(false));
   const { calculatePosition, modalPosition } = useModalPosition(
     inputRef,
     calendarPickerRef,
@@ -61,9 +61,9 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
     setInputValue(formattedDate);
   };
 
-  const handleInputValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
-    inputProps.onChange?.(e);
+  const handleInputClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    setShowPicker(true);
+    inputProps.onClick?.(e);
   };
 
   useEffect(() => {
@@ -87,9 +87,9 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
     selectedSlot,
     modalPosition,
     calendarPickerRef,
-    toggleShowPicker,
+    setShowPicker,
     setRefs,
     handleCalendarPickerChange,
-    handleInputValueChange,
+    handleInputClick,
   };
 }

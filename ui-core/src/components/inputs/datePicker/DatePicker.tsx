@@ -20,10 +20,10 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
     modalPosition,
     calendarPickerRef,
     selectedSlot,
-    toggleShowPicker,
+    setShowPicker,
     setRefs,
-    handleInputValueChange,
     handleCalendarPickerChange,
+    handleInputClick,
   } = useDatePicker(props);
   const { overrideClassname, ...restInputProps } = props.inputProps;
   return (
@@ -32,15 +32,15 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
         <Input
           ref={setRefs}
           value={inputValue}
-          onChange={handleInputValueChange}
+          onClick={handleInputClick}
           {...restInputProps}
           type="text"
           trailingContent={{
             content: <CalendarIcon />,
-            onClickCallback: () => toggleShowPicker(!showPicker),
+            onClickCallback: () => setShowPicker(!showPicker),
           }}
           overrideClassname={cx('date-picker-input', overrideClassname)}
-          readOnly //TODO wait spec. to allow user to type date manually
+          autoComplete="off"
         />
       </div>
       {showPicker && (
