@@ -7,6 +7,7 @@ import { withMask } from 'use-mask-input';
 import useClickOutside from '../../hooks/useOutsideClick';
 import { useModalPosition } from '../../hooks/useModalPosition';
 import { CalendarSlot } from './type';
+import { formatDateString } from './utils';
 
 export type DatePickerProps = {
   inputProps: InputProps;
@@ -36,14 +37,7 @@ export const DatePicker: React.FC<DatePickerProps> = ({ inputProps, calendarPick
   const isSingleMode = calendarPickerProps.mode === 'single';
   const isRangeMode = calendarPickerProps.mode === 'range';
 
-  const formatDateString = (date: Date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = String(date.getFullYear()).slice(-2);
-    return `${day}/${month}/${year}`;
-  };
-
-  const updateInputValue = (newSelectedSlot: CalendarSlot | undefined) => {
+  const formatSlotToInputValue = (newSelectedSlot: CalendarSlot | undefined) => {
     let formattedDate = '';
 
     if (newSelectedSlot) {
@@ -61,14 +55,14 @@ export const DatePicker: React.FC<DatePickerProps> = ({ inputProps, calendarPick
         }
       }
     }
-
-    setInputValue(formattedDate);
-    onChange?.({ target: { value: formattedDate } } as React.ChangeEvent<HTMLInputElement>);
+    return formattedDate;
   };
 
   const handleDateChange = (newSelectedSlot: CalendarSlot | undefined) => {
     setSelectedSlot(newSelectedSlot);
-    updateInputValue(newSelectedSlot);
+    const formattedDate = formatSlotToInputValue(newSelectedSlot);
+    setInputValue(formattedDate);
+    onChange?.({ target: { value: formattedDate } } as React.ChangeEvent<HTMLInputElement>);
   };
 
   useEffect(() => {

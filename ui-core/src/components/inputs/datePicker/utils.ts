@@ -148,3 +148,14 @@ export function generateSequentialDates(startDate: Date, monthsCount: number) {
   }
   return dates;
 }
+/**
+ * Format the given date as a string in the format 'dd/mm/yy'.
+ * @param date The date to format
+ * @returns The formatted date string
+ */
+export function formatDateString(date: Date) {
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const year = String(date.getFullYear()).slice(-2);
+  return `${day}/${month}/${year}`;
+}

@@ -6,6 +6,7 @@ import {
   isSameDay,
   isWithinInterval,
   normalizeDate,
+  formatDateString,
 } from '../utils';
 import { describe, expect, it } from 'vitest';
 
@@ -190,5 +191,27 @@ describe('normalizeDate', () => {
     expect(normalizedDate.getHours()).toBe(0);
     expect(normalizedDate.getMinutes()).toBe(0);
     expect(normalizedDate.getSeconds()).toBe(0);
+  });
+});
+
+describe('formatDateString', () => {
+  it('should format a date as a string', () => {
+    const date = new Date(2023, 3, 10);
+    expect(formatDateString(date)).toBe('10/04/23');
+  });
+
+  it('should format a date with a single digit day', () => {
+    const date = new Date(2023, 3, 1);
+    expect(formatDateString(date)).toBe('01/04/23');
+  });
+
+  it('should format a date with a single digit month', () => {
+    const date = new Date(2023, 1, 10);
+    expect(formatDateString(date)).toBe('10/02/23');
+  });
+
+  it('should format a date with a single digit day and month', () => {
+    const date = new Date(2023, 1, 1);
+    expect(formatDateString(date)).toBe('01/02/23');
   });
 });
