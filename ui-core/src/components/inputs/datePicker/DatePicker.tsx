@@ -1,13 +1,9 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React from 'react';
 import cx from 'classnames';
 import { Calendar as CalendarIcon } from '@osrd-project/ui-icons';
 import Input, { InputProps } from '../Input';
 import CalendarPicker, { CalendarPickerProps } from './CalendarPicker';
-import { withMask } from 'use-mask-input';
-import useClickOutside from '../../hooks/useOutsideClick';
-import { useModalPosition } from '../../hooks/useModalPosition';
-import { CalendarSlot } from './type';
-import { formatDateString } from './utils';
+import useDatePicker from './useDatePicker';
 
 export type DatePickerProps = {
   inputProps: InputProps;
@@ -17,79 +13,26 @@ export type DatePickerProps = {
   >;
 };
 
-export const DatePicker: React.FC<DatePickerProps> = ({ inputProps, calendarPickerProps }) => {
-  const [showPicker, toggleShowPicker] = useState(false);
-  const [inputValue, setInputValue] = useState('');
-  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(
-    calendarPickerProps.selectedSlot
-  );
-  const { overrideClassname, onChange, ...restInputProps } = inputProps;
-  const calendarPickerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  useClickOutside(calendarPickerRef, () => toggleShowPicker(false));
-  const { calculatePosition, modalPosition } = useModalPosition(
-    inputRef,
+export const DatePicker: React.FC<DatePickerProps> = (props) => {
+  const {
+    inputValue,
+    showPicker,
+    modalPosition,
     calendarPickerRef,
-    3,
-    -24
-  );
-
-  const isSingleMode = calendarPickerProps.mode === 'single';
-  const isRangeMode = calendarPickerProps.mode === 'range';
-
-  const formatSlotToInputValue = (newSelectedSlot: CalendarSlot | undefined) => {
-    let formattedDate = '';
-
-    if (newSelectedSlot) {
-      if (isSingleMode && newSelectedSlot.start) {
-        formattedDate = formatDateString(newSelectedSlot.start);
-      }
-
-      if (isRangeMode) {
-        const { start, end } = newSelectedSlot;
-        if (start && end) {
-          formattedDate =
-            start.getFullYear() === end.getFullYear()
-              ? `${formatDateString(start).slice(0, 5)} - ${formatDateString(end)}`
-              : `${formatDateString(start)} - ${formatDateString(end)}`;
-        }
-      }
-    }
-    return formattedDate;
-  };
-
-  const handleDateChange = (newSelectedSlot: CalendarSlot | undefined) => {
-    setSelectedSlot(newSelectedSlot);
-    const formattedDate = formatSlotToInputValue(newSelectedSlot);
-    setInputValue(formattedDate);
-    onChange?.({ target: { value: formattedDate } } as React.ChangeEvent<HTMLInputElement>);
-  };
-
-  useEffect(() => {
-    if (showPicker) {
-      calculatePosition();
-    }
-  }, [showPicker, calculatePosition]);
-
-  const setRefs = (el: HTMLInputElement | null) => {
-    if (el) {
-      inputRef.current = el;
-      withMask('datetime', {
-        inputFormat: 'dd/mm/yy',
-      });
-    }
-  };
-
+    selectedSlot,
+    toggleShowPicker,
+    setRefs,
+    handleInputValueChange,
+    handleCalendarPickerChange,
+  } = useDatePicker(props);
+  const { overrideClassname, ...restInputProps } = props.inputProps;
   return (
     <div className="date-picker">
       <div>
         <Input
           ref={setRefs}
           value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            onChange?.(e);
-          }}
+          onChange={handleInputValueChange}
           {...restInputProps}
           type="text"
           trailingContent={{
@@ -97,14 +40,15 @@ export const DatePicker: React.FC<DatePickerProps> = ({ inputProps, calendarPick
             onClickCallback: () => toggleShowPicker(!showPicker),
           }}
           overrideClassname={cx('date-picker-input', overrideClassname)}
+          readOnly //TODO wait spec. to allow user to type date manually
         />
       </div>
       {showPicker && (
         <div className="calendar-picker-wrapper">
           <CalendarPicker
-            {...calendarPickerProps}
+            {...props.calendarPickerProps}
             selectedSlot={selectedSlot}
-            onDateChange={handleDateChange}
+            onDateChange={handleCalendarPickerChange}
             modalPosition={modalPosition}
             calendarPickerRef={calendarPickerRef}
           />
