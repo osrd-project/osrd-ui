@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { CalendarPickerProps } from './CalendarPicker';
 import { CalendarSlot } from './type';
-import { getAllDatesInMonth, isValidSlot } from './utils';
+import { getAllDatesInMonth, isValidSlot, isSameDay, generateSequentialDates } from './utils';
 
 export default function useCalendarPicker({
   initialDate,
@@ -46,11 +46,7 @@ export default function useCalendarPicker({
   const initialActiveDate = initialDate ?? selectableSlot?.start ?? new Date();
   const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(initialSelectedSlot);
   const [activeDate, setActiveDate] = useState<Date>(initialActiveDate);
-  const displayedMonthsStartDates = Array.from({ length: numberOfMonths }).map((_, index) => {
-    const month = activeDate.getMonth() + index;
-    const year = activeDate.getFullYear() + Math.floor(month / 12);
-    return new Date(year, month % 12, 1);
-  });
+  const displayedMonthsStartDates = generateSequentialDates(activeDate, numberOfMonths);
 
   const activeYear = activeDate.getFullYear();
   const activeMonth = activeDate.getMonth();
@@ -58,14 +54,14 @@ export default function useCalendarPicker({
     .map((date) => getAllDatesInMonth(date.getMonth(), date.getFullYear()))
     .flat();
   const canGoToPreviousMonth =
-    selectableSlot?.start === null
+    selectableSlot === undefined || selectableSlot.start === null
       ? true
-      : !daysInMonth.some((d) => d.getTime() === selectableSlot?.start?.getTime());
+      : !daysInMonth.some((d) => isSameDay(d, selectableSlot.start));
 
   const canGoToNextMonth =
-    selectableSlot?.end === null
+    selectableSlot === undefined || selectableSlot.end === null
       ? true
-      : !daysInMonth.some((d) => d.getTime() === selectableSlot?.end?.getTime());
+      : !daysInMonth.some((d) => isSameDay(d, selectableSlot.end));
 
   const showNavigationBtn = canGoToPreviousMonth || canGoToNextMonth;
 

@@ -102,6 +102,15 @@ export function isSameDay(date1: Date | null, date2: Date | null) {
 }
 
 /**
+ * Normalize the given date to midnight
+ * @param date The date to normalize
+ * @returns The normalized date
+ */
+export function normalizeDate(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+/**
  * Check if the given date is within the given slot
  * if the slot is not provided, the date is considered to be within the slot
  * if a boundary of the slot is not provided, it's considered to be an open boundary
@@ -110,12 +119,32 @@ export function isSameDay(date1: Date | null, date2: Date | null) {
  * @returns True if the date is within the slot, false otherwise
  */
 export function isWithinInterval(date: Date, slot?: CalendarSlot) {
-  if (
-    slot &&
-    ((slot.start && slot.start.getTime() > date.getTime()) ||
-      (slot.end && slot.end.getTime() < date.getTime()))
-  ) {
-    return false;
+  if (!slot) return true;
+
+  const normalizedDate = normalizeDate(date);
+  const normalizedStart = slot.start ? normalizeDate(slot.start) : undefined;
+  const normalizedEnd = slot.end ? normalizeDate(slot.end) : undefined;
+
+  const isAfterStart = normalizedStart ? normalizedDate >= normalizedStart : true;
+  const isBeforeEnd = normalizedEnd ? normalizedDate <= normalizedEnd : true;
+
+  return isAfterStart && isBeforeEnd;
+}
+
+/**
+ * Generates a list of dates, each representing the start of a month,
+ * starting from a given date and continuing for a specified number of months.
+ * This function correctly handles year rollover.
+ * @param startDate - The date from which to start generating month start dates.
+ * @param monthsCount - The number of month start dates to generate.
+ * @returns An array of Dates, each set to the first day of consecutive months starting from startDate.
+ */
+export function generateSequentialDates(startDate: Date, monthsCount: number) {
+  const dates = [];
+  for (let i = 0; i < monthsCount; i++) {
+    const date = new Date(startDate);
+    date.setMonth(startDate.getMonth() + i);
+    dates.push(new Date(date.getFullYear(), date.getMonth(), 1));
   }
-  return true;
+  return dates;
 }
