@@ -1,7 +1,13 @@
 import { useState } from 'react';
 import { CalendarPickerProps } from './CalendarPicker';
 import { CalendarSlot } from './type';
-import { getAllDatesInMonth, isValidSlot, isSameDay, generateSequentialDates } from './utils';
+import {
+  getAllDatesInMonth,
+  isValidSlot,
+  isSameDay,
+  generateSequentialDates,
+  normalizeDate,
+} from './utils';
 
 export default function useCalendarPicker({
   initialDate,
@@ -28,8 +34,8 @@ export default function useCalendarPicker({
     initialSelectedSlot?.end &&
     selectableSlot?.start &&
     selectableSlot?.end &&
-    (initialSelectedSlot.start < selectableSlot.start ||
-      initialSelectedSlot.end > selectableSlot.end)
+    (normalizeDate(initialSelectedSlot.start) < normalizeDate(selectableSlot.start) ||
+      normalizeDate(initialSelectedSlot.end) > normalizeDate(selectableSlot.end))
   ) {
     throw new Error('selectedSlot must be within selectableSlot');
   }
@@ -38,7 +44,8 @@ export default function useCalendarPicker({
     initialDate &&
     selectableSlot?.start &&
     selectableSlot?.end &&
-    (initialDate < selectableSlot.start || initialDate > selectableSlot.end)
+    (normalizeDate(initialDate) < normalizeDate(selectableSlot.start) ||
+      normalizeDate(initialDate) > normalizeDate(selectableSlot.end))
   ) {
     throw new Error('initialDate must be within selectableSlot');
   }
@@ -81,6 +88,12 @@ export default function useCalendarPicker({
     }
   };
 
+  const handleDayClick = (clickedDate: Date) => {
+    const newSelectedSlot = computeNewSelectedSlot(clickedDate);
+    setSelectedSlot(newSelectedSlot);
+    onDateChange?.(newSelectedSlot);
+  };
+
   /**
    * Handles the logic for when a day is clicked on the calendar.
    *
@@ -92,36 +105,29 @@ export default function useCalendarPicker({
    * Spec 4: If the user clicks on a date that is after the currently selected start date, that date becomes the end date of the slot.
    * Spec 5: If a slot is already defined (i.e., both start and end dates are defined) and the user clicks on a new date, the existing slot is cleared and the new date becomes the start date of the new slot.
    */
-  const handleDayClick = (clickedDate: Date) => {
+  const computeNewSelectedSlot = (clickedDate: Date) => {
     if (mode === 'single') {
       // Spec 0
-      setSelectedSlot({ start: clickedDate, end: clickedDate });
-      onDateChange?.(clickedDate);
-      return;
+      return { start: clickedDate, end: clickedDate };
     }
 
     if (!selectedSlot || selectedSlot?.start === null) {
       // Spec 1
-      setSelectedSlot({ start: clickedDate, end: null });
-      onDateChange?.(clickedDate);
+      return { start: clickedDate, end: null };
     } else if (!selectedSlot.end) {
-      if (clickedDate.getTime() === selectedSlot.start.getTime()) {
+      if (normalizeDate(clickedDate).getTime() === normalizeDate(selectedSlot.start).getTime()) {
         // Spec 2
-        setSelectedSlot(undefined);
-        onDateChange?.('');
-      } else if (clickedDate.getTime() < selectedSlot.start.getTime()) {
+        return undefined;
+      } else if (normalizeDate(clickedDate) < normalizeDate(selectedSlot.start)) {
         // Spec 3
-        setSelectedSlot({ start: clickedDate, end: selectedSlot.start });
-        onDateChange?.(clickedDate);
+        return { start: clickedDate, end: selectedSlot.start };
       } else {
         // Spec 4
-        setSelectedSlot({ start: selectedSlot.start, end: clickedDate });
-        onDateChange?.(clickedDate);
+        return { start: selectedSlot.start, end: clickedDate };
       }
     } else {
       // Spec 5
-      setSelectedSlot({ start: clickedDate, end: null });
-      onDateChange?.(clickedDate);
+      return { start: clickedDate, end: null };
     }
   };
 

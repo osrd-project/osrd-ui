@@ -11,7 +11,7 @@ export type CalendarPickerProps = {
   selectableSlot?: CalendarSlot;
   numberOfMonths?: 1 | 2 | 3;
   mode?: 'single' | 'range';
-  onDateChange?: (date: Date | string) => void;
+  onDateChange?: (slot: CalendarSlot | undefined) => void;
   modalPosition: {
     top: number;
     left: number;

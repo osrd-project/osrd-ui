@@ -7,7 +7,7 @@ import { CalendarSlot } from './type';
  */
 export function isValidSlot(slot: CalendarSlot) {
   if (slot.start && slot.end) {
-    return slot.start.getTime() <= slot.end.getTime();
+    return normalizeDate(slot.start).getTime() <= normalizeDate(slot.end).getTime();
   }
   return true;
 }

@@ -5,6 +5,7 @@ import {
   getDatesFromPreviousMonthInFirstWeek,
   isSameDay,
   isWithinInterval,
+  normalizeDate,
 } from './utils';
 import cx from 'classnames';
 
@@ -38,7 +39,7 @@ export default function useCalendar({
       'inside-selectable-slot': insideSelectableSlot,
       'outside-selectable-slot': !insideSelectableSlot,
       'current-month': date.getMonth() === displayedMonth,
-      past: date.getTime() < today.getTime(),
+      past: normalizeDate(date) < normalizeDate(today),
     } as Record<string, boolean | null>;
 
     if (selectedSlot) {
@@ -61,14 +62,14 @@ export default function useCalendar({
     if (date.getMonth() !== displayedMonth) return false;
 
     // Check if the date is not in the past
-    if (date.getTime() < today.getTime()) return false;
+    if (normalizeDate(date) < normalizeDate(today)) return false;
 
     return true;
   };
 
   return {
     days: allDays,
-    isToday: (date: Date) => date.getTime() === today.getTime(),
+    isToday: (date: Date) => normalizeDate(date).getTime() === normalizeDate(today).getTime(),
     buildDayWrapperClassName,
     isDateSelectable,
   };
