@@ -1,6 +1,6 @@
 import React from 'react';
 import { StoryObj, Meta } from '@storybook/react';
-import DatePicker from '../components/inputs/datePicker/DatePicker';
+import { DatePicker } from '../components/inputs/datePicker';
 import '@osrd-project/ui-core/dist/theme.css';
 
 const startSelectableDate = new Date();

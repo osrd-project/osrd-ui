@@ -4,6 +4,7 @@ import { Eye, EyeClosed } from '@osrd-project/ui-icons';
 import Input, { InputProps } from './Input';
 import cx from 'classnames';
 
+export type PasswordInputProps = InputProps;
 export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
   ({ inputFieldWrapperClassname, ...restProps }, ref) => {
     const [showPassword, toggleShowPassword] = useState(false);
