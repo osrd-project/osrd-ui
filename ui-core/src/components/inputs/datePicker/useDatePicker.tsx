@@ -19,7 +19,12 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
 
   const calendarPickerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
-  useClickOutside(calendarPickerRef, () => setShowPicker(false));
+  useClickOutside(calendarPickerRef, (e) => {
+    // Do not close the picker if any children in input wrapper is clicked.
+    // This wrapper include, the input itself, the trailing content (which contains the calendar icon) and the leading content
+    if (inputRef.current && inputRef.current.parentElement?.contains(e.target as Node)) return;
+    setShowPicker(false);
+  });
   const { calculatePosition, modalPosition } = useModalPosition(
     inputRef,
     calendarPickerRef,
