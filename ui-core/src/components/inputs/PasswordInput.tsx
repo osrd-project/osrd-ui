@@ -5,7 +5,7 @@ import Input, { InputProps } from './Input';
 import cx from 'classnames';
 
 export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ overrideClassname, ...restProps }, ref) => {
+  ({ inputFieldWrapperClassname, ...restProps }, ref) => {
     const [showPassword, toggleShowPassword] = useState(false);
 
     return (
@@ -16,7 +16,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
           content: showPassword ? <EyeClosed /> : <Eye />,
           onClickCallback: () => toggleShowPassword(!showPassword),
         }}
-        overrideClassname={cx('password-input', overrideClassname)}
+        inputFieldWrapperClassname={cx('password-input', inputFieldWrapperClassname)}
         ref={ref}
       />
     );

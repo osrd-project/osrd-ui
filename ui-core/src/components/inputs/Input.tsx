@@ -49,7 +49,7 @@ export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
   Omit<FieldWrapperProps, 'children'> & {
     leadingContent?: InputAffixContent | InputAffixContentWithCallback;
     trailingContent?: InputAffixContent | InputAffixContentWithCallback;
-    overrideClassname?: string;
+    inputFieldWrapperClassname?: string;
   };
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -65,7 +65,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       disabled = false,
       readOnly = false,
       statusWithMessage,
-      overrideClassname = '',
+      inputFieldWrapperClassname = '',
       small = false,
       onKeyUp,
       onBlur,
@@ -84,7 +84,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         disabled={disabled}
         required={required}
         small={small}
-        className={cx('input-field-wrapper', overrideClassname)}
+        className={cx('input-field-wrapper', inputFieldWrapperClassname)}
       >
         <div
           className={cx('input-wrapper', {

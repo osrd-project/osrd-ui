@@ -25,7 +25,7 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
     handleCalendarPickerChange,
     handleInputClick,
   } = useDatePicker(props);
-  const { overrideClassname, ...restInputProps } = props.inputProps;
+  const { inputFieldWrapperClassname, ...restInputProps } = props.inputProps;
   return (
     <div className="date-picker">
       <div>
@@ -39,7 +39,7 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
             content: <CalendarIcon />,
             onClickCallback: () => setShowPicker(!showPicker),
           }}
-          overrideClassname={cx('date-picker-input', overrideClassname)}
+          inputFieldWrapperClassname={cx('date-picker-input', inputFieldWrapperClassname)}
           autoComplete="off"
         />
       </div>
