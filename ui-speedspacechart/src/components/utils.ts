@@ -1,4 +1,5 @@
 import type { Store } from '../types/chartTypes';
+import { LINEAR_LAYERS_HEIGHTS, MARGINS } from './const';
 
 type SpeedRangeValues = {
   minSpeed: number;
@@ -48,4 +49,48 @@ export const maxPositionValues = (store: Store): MaxPositionValues => {
 
 export const clearCanvas = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
   ctx.clearRect(0, 0, width, height);
+};
+
+export const getHeightWithLinearLayers = (
+  height: number,
+  linearDisplay: Store['linearDisplay']
+): number => {
+  let currentHeight = height;
+  const { electricalProfiles, powerRestrictions, speedLimitTags } = linearDisplay;
+  if (electricalProfiles) {
+    currentHeight += LINEAR_LAYERS_HEIGHTS.ELECTRICAL_PROFILES;
+  }
+  if (powerRestrictions) {
+    currentHeight += LINEAR_LAYERS_HEIGHTS.POWER_RESTRICTIONS;
+  }
+  if (speedLimitTags) {
+    currentHeight += LINEAR_LAYERS_HEIGHTS.SPEED_LIMIT_TAGS;
+  }
+  return currentHeight;
+};
+
+/**
+ * Calculates the position on the graph scale based on the given parameters.
+ * @param position - The current position.
+ * @param maxPosition - The maximum position.
+ * @param width - The width of the graph.
+ * @param ratioX - The X-axis ratio.
+ * @param margins - The margins of the graph.
+ * @returns The calculated position on the graph scale.
+ */
+export const positionOnGraphScale = (
+  position: number,
+  maxPosition: number,
+  width: number,
+  ratioX: number,
+  margins: typeof MARGINS
+) => {
+  return (
+    ((width - margins.CURVE_MARGIN_SIDES - margins.MARGIN_LEFT - margins.MARGIN_RIGHT) /
+      maxPosition) *
+      position *
+      ratioX +
+    margins.MARGIN_LEFT +
+    margins.CURVE_MARGIN_SIDES / 2
+  );
 };

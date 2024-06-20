@@ -7,4 +7,10 @@ export const MARGINS = {
   CURVE_MARGIN_SIDES: 16,
 };
 
+export const LINEAR_LAYERS_HEIGHTS = {
+  ELECTRICAL_PROFILES: 56,
+  POWER_RESTRICTIONS: 40,
+  SPEED_LIMIT_TAGS: 40,
+};
+
 export const FRONT_INTERACTIVITY_LAYER_ID = '#front-interactivity-layer';

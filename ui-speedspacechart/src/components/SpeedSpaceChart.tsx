@@ -12,7 +12,8 @@ import StepLayer from './layers/StepLayer';
 import ReticleLayer from './layers/ReticleLayer';
 import { resetZoom } from './helpers/layersManager';
 import StepNamesLayer from './layers/StepNamesLayer';
-import { getGraphOffsets } from './utils';
+import { getGraphOffsets, getHeightWithLinearLayers } from './utils';
+import PowerRestrictionsLayer from './layers/PowerRestrictionsLayer';
 
 export type SpeedSpaceChartProps = {
   width: number;
@@ -26,6 +27,7 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
     speed: [],
     stops: [],
     electrification: [],
+    powerRestrictions: [],
     slopes: [],
     ratioX: 1,
     leftOffset: 0,
@@ -33,9 +35,30 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       x: null,
       y: null,
     },
+    detailsBoxDisplay: {
+      energySource: true,
+      tractionStatus: true,
+      eletricalProfiles: true,
+      powerRestrictions: true,
+      gradient: true,
+    },
+    linearDisplay: {
+      fastestDrive: true,
+      speedLimits: false,
+      speedAnomalies: false,
+      electricalProfiles: false,
+      powerRestrictions: true,
+      declivities: false,
+      speedLimitTags: false,
+      signals: false,
+      steps: true,
+    },
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
+  const dynamicHeight = getHeightWithLinearLayers(height, store.linearDisplay);
+  const dynamicHeightOffset = getHeightWithLinearLayers(HEIGHT_OFFSET, store.linearDisplay);
+  console.log('dynamicHeight', dynamicHeight);
 
   const [showDetailsBox, setShowDetailsBox] = useState(false);
 
@@ -54,15 +77,23 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       stops: data.simulation.present.trains[0].base.stops || [],
       electrification: data.simulation.present.trains[0].electrification_ranges || [],
       slopes: data.simulation.present.trains[0].slopes || [],
+      powerRestrictions: data.powerRestrictions || [],
     };
 
-    if (storeData.speed && storeData.stops && storeData.electrification && storeData.slopes) {
+    if (
+      storeData.speed &&
+      storeData.stops &&
+      storeData.electrification &&
+      storeData.slopes &&
+      storeData.powerRestrictions
+    ) {
       setStore((prev) => ({
         ...prev,
         speed: storeData.speed,
         stops: storeData.stops,
         electrification: storeData.electrification,
         slopes: storeData.slopes,
+        powerRestrictions: storeData.powerRestrictions,
       }));
     }
   }, [data]);
@@ -71,7 +102,7 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
     <div
       style={{
         width: `${width}px`,
-        height: `${height}px`,
+        height: `${dynamicHeight}px`,
         backgroundColor: `${backgroundColor}`,
       }}
       tabIndex={0}
@@ -91,7 +122,8 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <StepNamesLayer key={stop.name} width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <TickLayerY width={width} height={height} store={store} />
-      <TickLayerX width={width} height={height} store={store} />
+      <PowerRestrictionsLayer width={width} height={height} store={store} />
+      <TickLayerX width={width} height={dynamicHeight} store={store} />
       <ReticleLayer
         width={width}
         height={height}
@@ -101,7 +133,7 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       />
       <FrontInteractivityLayer
         width={WIDTH_OFFSET}
-        height={HEIGHT_OFFSET}
+        height={dynamicHeightOffset}
         store={store}
         setStore={setStore}
         setShowDetailsBox={setShowDetailsBox}
