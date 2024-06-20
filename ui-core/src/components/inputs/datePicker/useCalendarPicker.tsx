@@ -50,7 +50,8 @@ export default function useCalendarPicker({
     throw new Error('initialDate must be within selectableSlot');
   }
 
-  const initialActiveDate = initialDate ?? selectableSlot?.start ?? new Date();
+  const initialActiveDate =
+    initialDate ?? initialSelectedSlot?.start ?? selectableSlot?.start ?? new Date();
   const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(initialSelectedSlot);
   const [activeDate, setActiveDate] = useState<Date>(initialActiveDate);
   const displayedMonthsStartDates = generateSequentialDates(activeDate, numberOfMonths);
