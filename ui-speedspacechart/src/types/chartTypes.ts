@@ -17,6 +17,26 @@ export type Store = {
     x: number | null;
     y: number | null;
   };
+  // TODO: update with 537
+  detailsBoxDisplay: {
+    energySource: boolean;
+    tractionStatus: boolean;
+    eletricalProfiles: boolean;
+    powerRestrictions: boolean;
+    gradient: boolean;
+  };
+  linearDisplay: {
+    fastestDrive: boolean;
+    speedLimits: boolean;
+    speedAnomalies: boolean;
+    electricalProfiles: boolean;
+    powerRestrictions: boolean;
+    declivities: boolean;
+    speedLimitTags: boolean;
+    signals: boolean;
+    steps: boolean;
+  };
+  isSettingsPanelOpened: boolean;
 };
 
 export type TrainDetails = {

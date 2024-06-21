@@ -13,6 +13,7 @@ import ReticleLayer from './layers/ReticleLayer';
 import { resetZoom } from './helpers/layersManager';
 import StepNamesLayer from './layers/StepNamesLayer';
 import { getGraphOffsets } from './utils';
+import SettingsPanel from './common/SettingsPanel';
 
 export type SpeedSpaceChartProps = {
   width: number;
@@ -33,6 +34,26 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       x: null,
       y: null,
     },
+    // TODO: update with 537
+    detailsBoxDisplay: {
+      energySource: true,
+      tractionStatus: true,
+      eletricalProfiles: true,
+      powerRestrictions: true,
+      gradient: true,
+    },
+    linearDisplay: {
+      fastestDrive: true,
+      speedLimits: false,
+      speedAnomalies: false,
+      electricalProfiles: false,
+      powerRestrictions: false,
+      declivities: false,
+      speedLimitTags: false,
+      signals: false,
+      steps: true,
+    },
+    isSettingsPanelOpened: true,
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
@@ -46,6 +67,13 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       leftOffset: 0,
     }));
     resetZoom();
+  };
+
+  const openSettingsPanel = () => {
+    setStore((prev) => ({
+      ...prev,
+      isSettingsPanelOpened: true,
+    }));
   };
 
   useEffect(() => {
@@ -81,15 +109,35 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
           className="bg-blue-600 hover:bg-blue-700 text-white-100 p-1 mr-6 z-10 rounded-full w-8 h-8"
           onClick={() => reset()}
         >
-          &#8617;
+          <span>&#8617;</span>
+        </button>
+        <button
+          className="bg-blue-600 hover:bg-blue-700 text-white-100 p-1 mr-6 z-10 rounded-full w-8 h-8"
+          onClick={() => openSettingsPanel()}
+        >
+          <span className="inline-block align-top">...</span>
         </button>
       </div>
+      {store.isSettingsPanelOpened && (
+        <div className="flex justify-end absolute ml-2" style={{ width: width, marginTop: 27 }}>
+          <SettingsPanel setStore={setStore} />
+        </div>
+      )}
       <CurveLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <AxisLayerY width={width} height={height} store={store} />
       <MajorGridY width={width} height={height} store={store} />
       <AxisLayerX width={width} height={height} store={store} />
-      <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
-      <StepNamesLayer key={stop.name} width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
+      {store.linearDisplay.steps && (
+        <>
+          <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
+          <StepNamesLayer
+            key={stop.name}
+            width={WIDTH_OFFSET}
+            height={HEIGHT_OFFSET}
+            store={store}
+          />
+        </>
+      )}
       <TickLayerY width={width} height={height} store={store} />
       <TickLayerX width={width} height={height} store={store} />
       <ReticleLayer

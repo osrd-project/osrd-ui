@@ -13,16 +13,17 @@
 }
 
 #curve-layer,
-#step-layer {
+#step-layer,
+#front-interactivity-layer  {
   margin-left: 3rem;
   margin-top: 1.6875rem;
+  }
+  
+.curve-layer-background {
+  background-color: rgb(255, 255, 255);
+  border-radius: 0.625rem 0.625rem 0 0;
   box-shadow: 0 0.0625rem 0,125rem 0 rgba(0, 0, 0, 0.19);
   box-shadow: 0 0.25rem 0.5625rem 0 rgba(0, 0, 0, 0.06);
-}
-
-#front-interactivity-layer {
-  margin-left: 3rem;
-  margin-top: 1.6875rem;
 }
 
 #details-box {
@@ -72,5 +73,33 @@
   
   #previous-gradient-text {
     font-family: 'IBM Plex Sans';
+  }
+}
+
+#settings-panel {
+  position: absolute;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  height: 27.5rem;
+  width: 32.875rem;
+  margin-right: 1.25rem;
+  border-radius: 0 0.625rem 0 0;
+  backdrop-filter: blur(0.3125rem);
+  /* TODO: figure out what to do with it (normal shadow?) */
+  box-shadow: inset 0 0 0 1px rgb(250, 249, 245);
+  /* TODO: has to stay an inner shadow */
+  box-shadow: inset 0 0 0 3px rgb(255, 255, 255);
+  /* TODO: has to become a border */
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+
+  #close-settings-panel {
+    position: absolute;
+    align-self: flex-start;
+    margin-left: 30.625rem;
+    border:none;
+    padding: 0.5rem;
+    cursor: pointer;
   }
 }
