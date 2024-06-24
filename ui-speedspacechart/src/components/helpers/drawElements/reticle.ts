@@ -169,6 +169,7 @@ export const drawCursor = (
       ctx.beginPath();
       // lines along the curve
       // horizontal
+      // TODO: add const for 12.75
       ctx.moveTo(curveX + MARGIN_LEFT - 12.75, curveY + MARGIN_TOP);
       ctx.lineTo(curveX + MARGIN_LEFT + 12.75, curveY + MARGIN_TOP);
       ctx.stroke();

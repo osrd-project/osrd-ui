@@ -12,7 +12,8 @@ import StepLayer from './layers/StepLayer';
 import ReticleLayer from './layers/ReticleLayer';
 import { resetZoom } from './helpers/layersManager';
 import StepNamesLayer from './layers/StepNamesLayer';
-import { getGraphOffsets } from './utils';
+import { getGraphOffsets, getHeightWithLayers } from './utils';
+import ElectricalProfileLayer from './layers/ElectricalProfileLayer';
 
 export type SpeedSpaceChartProps = {
   width: number;
@@ -27,15 +28,39 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
     stops: [],
     electrification: [],
     slopes: [],
+    electricalProfiles: {
+      boundaries: [],
+      values: [],
+    },
     ratioX: 1,
     leftOffset: 0,
     cursor: {
       x: null,
       y: null,
     },
+    detailsBoxDisplay: {
+      energySource: true,
+      tractionStatus: true,
+      eletricalProfiles: true,
+      powerRestrictions: true,
+      gradient: true,
+    },
+    linearDisplay: {
+      fastestDrive: true,
+      speedLimits: false,
+      speedAnomalies: false,
+      electricalProfiles: true,
+      powerRestrictions: false,
+      declivities: false,
+      speedLimitTags: false,
+      signals: false,
+      steps: true,
+    },
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
+  const dynamicHeight = getHeightWithLayers(height, store.linearDisplay);
+  const dynamicHeightOffset = getHeightWithLayers(HEIGHT_OFFSET, store.linearDisplay);
 
   const [showDetailsBox, setShowDetailsBox] = useState(false);
 
@@ -54,15 +79,23 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       stops: data.simulation.present.trains[0].base.stops || [],
       electrification: data.simulation.present.trains[0].electrification_ranges || [],
       slopes: data.simulation.present.trains[0].slopes || [],
+      electricalProfiles: data.electricalProfiles,
     };
 
-    if (storeData.speed && storeData.stops && storeData.electrification && storeData.slopes) {
+    if (
+      storeData.speed &&
+      storeData.stops &&
+      storeData.electrification &&
+      storeData.slopes &&
+      storeData.electricalProfiles
+    ) {
       setStore((prev) => ({
         ...prev,
         speed: storeData.speed,
         stops: storeData.stops,
         electrification: storeData.electrification,
         slopes: storeData.slopes,
+        electricalProfiles: storeData.electricalProfiles,
       }));
     }
   }, [data]);
@@ -71,7 +104,7 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
     <div
       style={{
         width: `${width}px`,
-        height: `${height}px`,
+        height: `${dynamicHeight}px`,
         backgroundColor: `${backgroundColor}`,
       }}
       tabIndex={0}
@@ -85,23 +118,24 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
         </button>
       </div>
       <CurveLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
+      <ElectricalProfileLayer width={width} height={height} store={store} />
       <AxisLayerY width={width} height={height} store={store} />
       <MajorGridY width={width} height={height} store={store} />
       <AxisLayerX width={width} height={height} store={store} />
       <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <StepNamesLayer key={stop.name} width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <TickLayerY width={width} height={height} store={store} />
-      <TickLayerX width={width} height={height} store={store} />
+      <TickLayerX width={width} height={dynamicHeight} store={store} />
       <ReticleLayer
         width={width}
-        height={height}
+        height={dynamicHeight}
         store={store}
         showDetailsBox={showDetailsBox}
         setShowDetailsBox={setShowDetailsBox}
       />
       <FrontInteractivityLayer
         width={WIDTH_OFFSET}
-        height={HEIGHT_OFFSET}
+        height={dynamicHeightOffset}
         store={store}
         setStore={setStore}
         setShowDetailsBox={setShowDetailsBox}

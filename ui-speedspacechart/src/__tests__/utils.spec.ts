@@ -27,6 +27,30 @@ const store: Store = {
     x: null,
     y: null,
   },
+
+  // TODO: Create test for detailsBoxDisplay, linearDisplay and electricalProfiles
+  detailsBoxDisplay: {
+    energySource: true,
+    tractionStatus: true,
+    eletricalProfiles: true,
+    powerRestrictions: true,
+    gradient: true,
+  },
+  linearDisplay: {
+    fastestDrive: true,
+    speedLimits: false,
+    speedAnomalies: false,
+    electricalProfiles: true,
+    powerRestrictions: false,
+    declivities: false,
+    speedLimitTags: false,
+    signals: false,
+    steps: true,
+  },
+  electricalProfiles: {
+    boundaries: [],
+    values: [],
+  },
 };
 
 describe('getGraphOffsets', () => {

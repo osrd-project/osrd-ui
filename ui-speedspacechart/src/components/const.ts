@@ -5,6 +5,15 @@ export const MARGINS = {
   MARGIN_BOTTOM: 52.5,
   CURVE_MARGIN_TOP: 40,
   CURVE_MARGIN_SIDES: 16,
+  ELECTRICAL_PROFILE_MARGIN_TOP: 56,
+};
+
+export const LAYERS_HEIGHTS = {
+  ELECTRICAL_PROFILES: 56,
+  POWER_RESTRICTIONS: 40,
+  SPEED_LIMIT_TAGS: 40,
 };
 
 export const FRONT_INTERACTIVITY_LAYER_ID = '#front-interactivity-layer';
+
+export const ELECTRICAL_PROFILE_LAYER_ID = '#electrical-profile-layer';

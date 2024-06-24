@@ -1,4 +1,5 @@
 import type { Store } from '../types/chartTypes';
+import { LAYERS_HEIGHTS } from './const';
 
 type SpeedRangeValues = {
   minSpeed: number;
@@ -48,4 +49,22 @@ export const maxPositionValues = (store: Store): MaxPositionValues => {
 
 export const clearCanvas = (ctx: CanvasRenderingContext2D, width: number, height: number) => {
   ctx.clearRect(0, 0, width, height);
+};
+
+export const getHeightWithLayers = (
+  height: number,
+  linearDisplay: Store['linearDisplay']
+): number => {
+  let currentHeight = height;
+  const { electricalProfiles, powerRestrictions, speedLimitTags } = linearDisplay;
+  if (electricalProfiles) {
+    currentHeight += LAYERS_HEIGHTS.ELECTRICAL_PROFILES;
+  }
+  if (powerRestrictions) {
+    currentHeight += LAYERS_HEIGHTS.POWER_RESTRICTIONS;
+  }
+  if (speedLimitTags) {
+    currentHeight += LAYERS_HEIGHTS.SPEED_LIMIT_TAGS;
+  }
+  return currentHeight;
 };
