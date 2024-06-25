@@ -34,24 +34,21 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       x: null,
       y: null,
     },
-    // TODO: update with 537
     detailsBoxDisplay: {
       energySource: true,
       tractionStatus: true,
+      declivities: true,
       eletricalProfiles: true,
       powerRestrictions: true,
-      gradient: true,
     },
-    linearDisplay: {
-      fastestDrive: true,
+    layersDisplay: {
+      steps: true,
+      declivities: false,
       speedLimits: false,
-      speedAnomalies: false,
+      temporarySpeedLimits: false,
       electricalProfiles: false,
       powerRestrictions: false,
-      declivities: false,
       speedLimitTags: false,
-      signals: false,
-      steps: true,
     },
     isSettingsPanelOpened: true,
   });
@@ -120,14 +117,14 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       </div>
       {store.isSettingsPanelOpened && (
         <div className="flex justify-end absolute ml-2" style={{ width: width, marginTop: 27 }}>
-          <SettingsPanel setStore={setStore} />
+          <SettingsPanel store={store} setStore={setStore} />
         </div>
       )}
       <CurveLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <AxisLayerY width={width} height={height} store={store} />
       <MajorGridY width={width} height={height} store={store} />
       <AxisLayerX width={width} height={height} store={store} />
-      {store.linearDisplay.steps && (
+      {store.layersDisplay.steps && (
         <>
           <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
           <StepNamesLayer

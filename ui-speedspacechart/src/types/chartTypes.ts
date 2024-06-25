@@ -17,24 +17,23 @@ export type Store = {
     x: number | null;
     y: number | null;
   };
-  // TODO: update with 537
   detailsBoxDisplay: {
+    [key: string]: boolean;
     energySource: boolean;
     tractionStatus: boolean;
+    declivities: boolean;
     eletricalProfiles: boolean;
     powerRestrictions: boolean;
-    gradient: boolean;
   };
-  linearDisplay: {
-    fastestDrive: boolean;
+  layersDisplay: {
+    [key: string]: boolean;
+    steps: boolean;
+    declivities: boolean;
     speedLimits: boolean;
-    speedAnomalies: boolean;
+    temporarySpeedLimits: boolean;
     electricalProfiles: boolean;
     powerRestrictions: boolean;
-    declivities: boolean;
     speedLimitTags: boolean;
-    signals: boolean;
-    steps: boolean;
   };
   isSettingsPanelOpened: boolean;
 };

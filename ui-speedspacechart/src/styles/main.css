@@ -14,15 +14,15 @@
 
 #curve-layer,
 #step-layer,
-#front-interactivity-layer  {
+#front-interactivity-layer {
   margin-left: 3rem;
   margin-top: 1.6875rem;
-  }
-  
+}
+
 .curve-layer-background {
   background-color: rgb(255, 255, 255);
   border-radius: 0.625rem 0.625rem 0 0;
-  box-shadow: 0 0.0625rem 0,125rem 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 0.0625rem 0, 125rem 0 rgba(0, 0, 0, 0.19);
   box-shadow: 0 0.25rem 0.5625rem 0 rgba(0, 0, 0, 0.06);
 }
 
@@ -50,27 +50,27 @@
     margin-bottom: 0.1875rem;
 
   }
-  
+
   #mareco-speed-text {
     font-weight: 600;
   }
-  
+
   #base-speed-text {
     display: flex;
     justify-content: space-between;
     color: rgba(255, 255, 255, 0.75);
   }
-  
+
   #mode-text {
     font-family: 'IBM Plex Sans', sans-serif;
     color: rgb(255, 247, 0);
   }
-  
+
   #effort-text {
     font-family: 'IBM Plex Sans', sans-serif;
     color: rgb(112, 193, 229);
   }
-  
+
   #previous-gradient-text {
     font-family: 'IBM Plex Sans';
   }
@@ -79,11 +79,10 @@
 #settings-panel {
   position: absolute;
   display: flex;
-  justify-content: space-around;
-  align-items: center;
   height: 27.5rem;
   width: 32.875rem;
   margin-right: 1.25rem;
+  color: rgb(49, 46, 43);
   border-radius: 0 0.625rem 0 0;
   backdrop-filter: blur(0.3125rem);
   /* TODO: figure out what to do with it (normal shadow?) */
@@ -94,12 +93,40 @@
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.1);
   z-index: 10;
 
+  .settings-panel-section {
+    height: 24px;
+    line-height: 24px;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 7px;
+  }
+
+  .selection {
+    height: 28px;
+    padding-top: 3px;
+    padding-bottom: 5px;
+    margin-bottom: 4px;
+
+    &-checkbox {
+      height: 18px;
+      margin-left: 8px;
+    }
+
+    &-label {
+      font-weight: 400;
+      margin-left: 8px;
+    }
+  }
+
   #close-settings-panel {
     position: absolute;
     align-self: flex-start;
+    height: 16px;
+    width: 16px;
     margin-left: 30.625rem;
-    border:none;
-    padding: 0.5rem;
+    margin-top: 14px;
+    margin-right: 14px;
+    border: none;
     cursor: pointer;
   }
 }
