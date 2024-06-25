@@ -5,6 +5,6 @@ export default defineConfig({
   test: {
     include: ['src/**/*.spec.ts'],
     environment: 'jsdom',
-    silent: true, // Disable console.log output from tests
+    silent: false, // Disable console.log output from tests
   },
 });

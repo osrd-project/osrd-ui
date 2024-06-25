@@ -11,7 +11,7 @@ export type CalendarPickerProps = {
   selectableSlot?: CalendarSlot;
   numberOfMonths?: 1 | 2 | 3;
   isRangeMode?: boolean;
-  onDateChange: (slot: CalendarSlot | undefined) => void;
+  onDateChange: (nextSelectedSlot: CalendarSlot | undefined) => void;
   modalPosition: {
     top: number;
     left: number;
@@ -21,7 +21,7 @@ export type CalendarPickerProps = {
 
 const CalendarPicker: React.FC<CalendarPickerProps> = ({
   initialDate,
-  selectedSlot: initialSelectedSlot,
+  selectedSlot,
   selectableSlot,
   numberOfMonths = 1,
   isRangeMode = false,
@@ -30,7 +30,6 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
   calendarPickerRef,
 }) => {
   const {
-    selectedSlot,
     displayedMonthsStartDates,
     showNavigationBtn,
     canGoToNextMonth,
@@ -40,7 +39,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
     handleGoToPreviousMonth,
   } = useCalendarPicker({
     initialDate,
-    selectedSlot: initialSelectedSlot,
+    selectedSlot,
     selectableSlot,
     numberOfMonths,
     isRangeMode,

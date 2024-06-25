@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { CalendarPickerProps } from './CalendarPicker';
-import { CalendarSlot } from './type';
 import {
   getAllDatesInMonth,
   isValidSlot,
@@ -11,13 +10,13 @@ import {
 
 export default function useCalendarPicker({
   initialDate,
-  selectedSlot: initialSelectedSlot,
+  selectedSlot,
   selectableSlot,
   numberOfMonths = 1,
   isRangeMode = false,
   onDateChange,
 }: Omit<CalendarPickerProps, 'modalPosition' | 'calendarPickerRef'>) {
-  if (initialSelectedSlot && !isValidSlot(initialSelectedSlot)) {
+  if (selectedSlot && !isValidSlot(selectedSlot)) {
     throw new Error(
       'Invalid selectedSlot: If start and end are defined, the start date must be before the end date.'
     );
@@ -30,12 +29,12 @@ export default function useCalendarPicker({
   }
 
   if (
-    initialSelectedSlot?.start &&
-    initialSelectedSlot?.end &&
+    selectedSlot?.start &&
+    selectedSlot?.end &&
     selectableSlot?.start &&
     selectableSlot?.end &&
-    (normalizeDate(initialSelectedSlot.start) < normalizeDate(selectableSlot.start) ||
-      normalizeDate(initialSelectedSlot.end) > normalizeDate(selectableSlot.end))
+    (normalizeDate(selectedSlot.start) < normalizeDate(selectableSlot.start) ||
+      normalizeDate(selectedSlot.end) > normalizeDate(selectableSlot.end))
   ) {
     throw new Error('selectedSlot must be within selectableSlot');
   }
@@ -51,8 +50,7 @@ export default function useCalendarPicker({
   }
 
   const initialActiveDate =
-    initialDate ?? initialSelectedSlot?.start ?? selectableSlot?.start ?? new Date();
-  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(initialSelectedSlot);
+    initialDate ?? selectedSlot?.start ?? selectableSlot?.start ?? new Date();
   const [activeDate, setActiveDate] = useState<Date>(initialActiveDate);
   const displayedMonthsStartDates = generateSequentialDates(activeDate, numberOfMonths);
 
@@ -91,7 +89,6 @@ export default function useCalendarPicker({
 
   const handleDayClick = (clickedDate: Date) => {
     const newSelectedSlot = computeNewSelectedSlot(clickedDate);
-    setSelectedSlot(newSelectedSlot);
     onDateChange?.(newSelectedSlot);
   };
 
@@ -114,6 +111,7 @@ export default function useCalendarPicker({
 
     if (!selectedSlot || selectedSlot?.start === null) {
       // Spec 1
+
       return { start: clickedDate, end: null };
     } else if (!selectedSlot.end) {
       if (normalizeDate(clickedDate).getTime() === normalizeDate(selectedSlot.start).getTime()) {

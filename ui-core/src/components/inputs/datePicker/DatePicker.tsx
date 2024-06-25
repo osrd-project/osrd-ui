@@ -7,10 +7,7 @@ import useDatePicker from './useDatePicker';
 
 export type DatePickerProps = {
   inputProps: InputProps;
-  calendarPickerProps: Omit<
-    CalendarPickerProps,
-    'modalPosition' | 'calendarPickerRef' | 'onDateChange'
-  >;
+  calendarPickerProps: Omit<CalendarPickerProps, 'modalPosition' | 'calendarPickerRef'>;
 };
 
 export const DatePicker: React.FC<DatePickerProps> = (props) => {
@@ -19,7 +16,6 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
     showPicker,
     modalPosition,
     calendarPickerRef,
-    selectedSlot,
     setShowPicker,
     setRefs,
     handleCalendarPickerChange,
@@ -47,7 +43,6 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
         <div className="calendar-picker-wrapper">
           <CalendarPicker
             {...props.calendarPickerProps}
-            selectedSlot={selectedSlot}
             onDateChange={handleCalendarPickerChange}
             modalPosition={modalPosition}
             calendarPickerRef={calendarPickerRef}

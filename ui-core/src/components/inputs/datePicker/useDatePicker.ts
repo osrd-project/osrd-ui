@@ -13,9 +13,6 @@ const INPUT_FORMAT = 'dd/mm/yy';
 export default function useDatePicker({ calendarPickerProps, inputProps }: DatePickerProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [selectedSlot, setSelectedSlot] = useState<CalendarSlot | undefined>(
-    calendarPickerProps.selectedSlot
-  );
 
   const calendarPickerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
@@ -58,9 +55,9 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
   };
 
   const handleCalendarPickerChange = (newSelectedSlot: CalendarSlot | undefined) => {
-    setSelectedSlot(newSelectedSlot);
     const formattedDate = formatSlotToInputValue(newSelectedSlot);
     setInputValue(formattedDate);
+    calendarPickerProps.onDateChange(newSelectedSlot);
   };
 
   const handleInputClick = (e: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
@@ -86,7 +83,6 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
   return {
     showPicker,
     inputValue,
-    selectedSlot,
     modalPosition,
     calendarPickerRef,
     setShowPicker,

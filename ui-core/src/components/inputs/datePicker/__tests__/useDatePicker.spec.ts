@@ -1,15 +1,21 @@
 import { renderHook, act } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { CalendarSlot } from '../type';
 import useDatePicker from '../useDatePicker';
 
 describe('useDatePicker', () => {
+  let onDateChange: (nextSelectedSlot: CalendarSlot | undefined) => void;
+
+  beforeEach(() => {
+    onDateChange = vi.fn();
+  });
+
   describe('day click on calendar handling', () => {
     describe('single mode', () => {
       it('should set input value with a formatted selected slot', () => {
         const { result } = renderHook(() =>
           useDatePicker({
-            calendarPickerProps: { isRangeMode: false },
+            calendarPickerProps: { isRangeMode: false, onDateChange },
             inputProps: { id: 'id', label: 'single' },
           })
         );
@@ -19,7 +25,7 @@ describe('useDatePicker', () => {
           result.current.handleCalendarPickerChange(newSelectedSlot);
         });
 
-        expect(result.current.selectedSlot).toEqual(newSelectedSlot);
+        expect(onDateChange).toHaveBeenCalledWith(newSelectedSlot);
         expect(result.current.inputValue).toBe('01/01/24');
       });
     });
@@ -28,7 +34,7 @@ describe('useDatePicker', () => {
       it('should set input value with a formatted selected slot', () => {
         const { result } = renderHook(() =>
           useDatePicker({
-            calendarPickerProps: { isRangeMode: true },
+            calendarPickerProps: { isRangeMode: true, onDateChange },
             inputProps: { id: 'id', label: 'range' },
           })
         );
@@ -38,7 +44,7 @@ describe('useDatePicker', () => {
           result.current.handleCalendarPickerChange(newSelectedSlot);
         });
 
-        expect(result.current.selectedSlot).toEqual(newSelectedSlot);
+        expect(onDateChange).toHaveBeenCalledWith(newSelectedSlot);
         expect(result.current.inputValue).toBe('01/01/24 -');
 
         newSelectedSlot = { start: new Date(2024, 0, 1), end: new Date(2024, 0, 2) };
@@ -46,7 +52,7 @@ describe('useDatePicker', () => {
           result.current.handleCalendarPickerChange(newSelectedSlot);
         });
 
-        expect(result.current.selectedSlot).toEqual(newSelectedSlot);
+        expect(onDateChange).toHaveBeenCalledWith(newSelectedSlot);
         expect(result.current.inputValue).toBe('01/01 - 02/01/24');
       });
     });
