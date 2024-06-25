@@ -11,7 +11,7 @@ export type CalendarPickerProps = {
   selectableSlot?: CalendarSlot;
   numberOfMonths?: 1 | 2 | 3;
   isRangeMode?: boolean;
-  onDateChange?: (slot: CalendarSlot | undefined) => void;
+  onDateChange: (slot: CalendarSlot | undefined) => void;
   modalPosition: {
     top: number;
     left: number;
@@ -25,7 +25,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
   selectableSlot,
   numberOfMonths = 1,
   isRangeMode = false,
-  onDateChange = () => {},
+  onDateChange,
   modalPosition,
   calendarPickerRef,
 }) => {
@@ -48,11 +48,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
   });
 
   return (
-    <div
-      ref={calendarPickerRef}
-      className="calendar-picker"
-      style={{ top: modalPosition?.top, left: modalPosition?.left }}
-    >
+    <div ref={calendarPickerRef} className="calendar-picker" style={modalPosition}>
       {showNavigationBtn && (
         <span
           className={cx('calendar-navigation-btn', 'previous', {

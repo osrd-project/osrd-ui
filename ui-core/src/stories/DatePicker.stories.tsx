@@ -33,7 +33,7 @@ const meta: Meta<typeof DatePicker> = {
       label: 'Select a date',
     },
   },
-  title: 'DatePicker',
+  title: 'core/DatePicker',
   tags: ['autodocs'],
 };
 

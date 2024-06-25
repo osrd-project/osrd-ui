@@ -4,7 +4,7 @@ export const useModalPosition = (
   inputRef: React.RefObject<HTMLInputElement>,
   modalRef: React.RefObject<HTMLDivElement>,
   offset: number = 3, // Default offset below the input
-  horizentalOffset: number = 0 // Default horizental offset to center the modal
+  horizontalOffset: number = 0 // Default horizental offset to center the modal
 ) => {
   const [modalPosition, setModalPosition] = useState<{ top: number; left: number }>({
     top: 0,
@@ -20,7 +20,7 @@ export const useModalPosition = (
       let left = inputRect.left + inputRect.width / 2 - modalRect.width / 2;
       // Set the top position directly below the input element with a slight offset
       let top = inputRect.bottom + window.scrollY - offset; // Apply the offset below the input
-      left = left - horizentalOffset; // Apply the offset below the input
+      left = left - horizontalOffset; // Apply the offset below the input
 
       // Adjust if modal goes beyond viewport
       if (left + modalRect.width > window.innerWidth) {
@@ -30,12 +30,12 @@ export const useModalPosition = (
       }
 
       if (top + modalRect.height > window.innerHeight) {
-        top = window.innerHeight - modalRect.height - horizentalOffset;
+        top = window.innerHeight - modalRect.height - horizontalOffset;
       }
 
       setModalPosition({ top, left });
     }
-  }, [inputRef, modalRef, offset, horizentalOffset]);
+  }, [inputRef, modalRef, offset, horizontalOffset]);
 
   useEffect(() => {
     calculatePosition();
