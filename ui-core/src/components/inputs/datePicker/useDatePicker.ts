@@ -31,22 +31,18 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
     let formattedDate = '';
 
     if (newSelectedSlot) {
-      if (!calendarPickerProps.isRangeMode && newSelectedSlot.start) {
-        formattedDate = formatDateString(newSelectedSlot.start);
-      }
-
+      const { start, end } = newSelectedSlot;
       if (calendarPickerProps.isRangeMode) {
-        const { start, end } = newSelectedSlot;
         if (start && end) {
           formattedDate =
             start.getFullYear() === end.getFullYear()
               ? `${formatDateString(start).slice(0, 5)} - ${formatDateString(end)}`
               : `${formatDateString(start)} - ${formatDateString(end)}`;
-        }
-
-        if (start && !end) {
+        } else if (start) {
           formattedDate = `${formatDateString(start)} -`;
         }
+      } else {
+        formattedDate = formatDateString(start);
       }
     }
     return formattedDate;
