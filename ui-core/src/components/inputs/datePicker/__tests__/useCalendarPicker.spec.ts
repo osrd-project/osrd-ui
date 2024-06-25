@@ -1,9 +1,19 @@
 import { renderHook, act } from '@testing-library/react';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { CalendarSlot } from '../type';
-import useCalendarPicker from '../useCalendarPicker';
+import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest';
+import useCalendarPicker, {
+  INVALID_SELECTED_SLOT_ERROR,
+  INVALID_SELECTABLE_SLOT_ERROR,
+  INVALID_SELECTED_SLOT_BASED_ON_SELECTABLE_SLOT_ERROR,
+  INVALID_INITIAL_DATE_ERROR,
+} from '../useCalendarPicker';
 import { generateSequentialDates } from '../utils';
 
+const errorsToIgnore = [
+  INVALID_SELECTED_SLOT_ERROR,
+  INVALID_SELECTABLE_SLOT_ERROR,
+  INVALID_SELECTED_SLOT_BASED_ON_SELECTABLE_SLOT_ERROR,
+  INVALID_INITIAL_DATE_ERROR,
+];
 describe('useCalendarPicker', () => {
   const january = 0;
   const february = 1;
@@ -11,13 +21,29 @@ describe('useCalendarPicker', () => {
   const july = 6;
   const august = 7;
   const december = 11;
-  let onDateChange: (nextSelectedSlot: CalendarSlot | undefined) => void;
-
-  beforeEach(() => {
-    onDateChange = vi.fn();
-  });
+  const onDateChange = vi.fn();
 
   describe('Initialization', () => {
+    let originalConsoleError: typeof console.error;
+
+    beforeEach(() => {
+      // Ignore expected errors to avoid to pollute the test output
+      originalConsoleError = console.error;
+      console.error = (...args) => {
+        const isErrorToIgnore = errorsToIgnore.some((errorMsg) => args[0].includes(errorMsg));
+        const isReactError = args[0].includes(
+          'The above error occurred in the <TestComponent> component:'
+        );
+        if (!isErrorToIgnore && !isReactError) {
+          originalConsoleError(...args);
+        }
+      };
+    });
+
+    afterEach(() => {
+      console.error = originalConsoleError;
+    });
+
     it('should initialize with the correct default values', () => {
       const { result } = renderHook(() => useCalendarPicker({ onDateChange }));
 

@@ -8,6 +8,14 @@ import {
   normalizeDate,
 } from './utils';
 
+export const INVALID_SELECTED_SLOT_ERROR =
+  'Invalid selectedSlot: If start and end are defined, the start date must be before the end date.';
+export const INVALID_SELECTABLE_SLOT_ERROR =
+  'Invalid selectableSlot: If start and end are defined, the start date must be before the end date.';
+export const INVALID_SELECTED_SLOT_BASED_ON_SELECTABLE_SLOT_ERROR =
+  'selectedSlot must be within selectableSlot';
+export const INVALID_INITIAL_DATE_ERROR = 'initialDate must be within selectableSlot';
+
 export default function useCalendarPicker({
   initialDate,
   selectedSlot,
@@ -17,15 +25,11 @@ export default function useCalendarPicker({
   onDateChange,
 }: Omit<CalendarPickerProps, 'modalPosition' | 'calendarPickerRef'>) {
   if (selectedSlot && !isValidSlot(selectedSlot)) {
-    throw new Error(
-      'Invalid selectedSlot: If start and end are defined, the start date must be before the end date.'
-    );
+    throw new Error(INVALID_SELECTED_SLOT_ERROR);
   }
 
   if (selectableSlot && !isValidSlot(selectableSlot)) {
-    throw new Error(
-      'Invalid selectableSlot: If start and end are defined, the start date must be before the end date.'
-    );
+    throw new Error(INVALID_SELECTABLE_SLOT_ERROR);
   }
 
   if (
@@ -36,7 +40,7 @@ export default function useCalendarPicker({
     (normalizeDate(selectedSlot.start) < normalizeDate(selectableSlot.start) ||
       normalizeDate(selectedSlot.end) > normalizeDate(selectableSlot.end))
   ) {
-    throw new Error('selectedSlot must be within selectableSlot');
+    throw new Error(INVALID_SELECTED_SLOT_BASED_ON_SELECTABLE_SLOT_ERROR);
   }
 
   if (
@@ -46,7 +50,7 @@ export default function useCalendarPicker({
     (normalizeDate(initialDate) < normalizeDate(selectableSlot.start) ||
       normalizeDate(initialDate) > normalizeDate(selectableSlot.end))
   ) {
-    throw new Error('initialDate must be within selectableSlot');
+    throw new Error(INVALID_INITIAL_DATE_ERROR);
   }
 
   const initialActiveDate =
