@@ -14,7 +14,7 @@ export default function useCalendarPicker({
   selectedSlot: initialSelectedSlot,
   selectableSlot,
   numberOfMonths = 1,
-  mode = 'single',
+  isRangeMode = false,
   onDateChange,
 }: Omit<CalendarPickerProps, 'modalPosition' | 'calendarPickerRef'>) {
   if (initialSelectedSlot && !isValidSlot(initialSelectedSlot)) {
@@ -99,7 +99,7 @@ export default function useCalendarPicker({
    * Handles the logic for when a day is clicked on the calendar.
    *
    * @param clickedDate - The date that was clicked.
-   * Spec 0: If the mode is single, set the selected slot to the clicked date.
+   * Spec 0: If the mode is not range (single), set the selected slot to the clicked date.
    * Spec 1: If the user clicks on a single date, that date is set as the start date of the slot.
    * Spec 2: If the user selects the same end date as the start date, clear the slot
    * Spec 3: If the user clicks on a date that is before the currently selected start date, the new date becomes the start date and the previous start date becomes the end date.
@@ -107,7 +107,7 @@ export default function useCalendarPicker({
    * Spec 5: If a slot is already defined (i.e., both start and end dates are defined) and the user clicks on a new date, the existing slot is cleared and the new date becomes the start date of the new slot.
    */
   const computeNewSelectedSlot = (clickedDate: Date) => {
-    if (mode === 'single') {
+    if (!isRangeMode) {
       // Spec 0
       return { start: clickedDate, end: clickedDate };
     }

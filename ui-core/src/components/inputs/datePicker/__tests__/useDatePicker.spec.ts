@@ -9,7 +9,7 @@ describe('useDatePicker', () => {
       it('should set input value with a formatted selected slot', () => {
         const { result } = renderHook(() =>
           useDatePicker({
-            calendarPickerProps: { mode: 'single' },
+            calendarPickerProps: { isRangeMode: false },
             inputProps: { id: 'id', label: 'single' },
           })
         );
@@ -28,7 +28,7 @@ describe('useDatePicker', () => {
       it('should set input value with a formatted selected slot', () => {
         const { result } = renderHook(() =>
           useDatePicker({
-            calendarPickerProps: { mode: 'range' },
+            calendarPickerProps: { isRangeMode: true },
             inputProps: { id: 'id', label: 'range' },
           })
         );

@@ -10,7 +10,7 @@ export type CalendarPickerProps = {
   selectedSlot?: CalendarSlot;
   selectableSlot?: CalendarSlot;
   numberOfMonths?: 1 | 2 | 3;
-  mode?: 'single' | 'range';
+  isRangeMode?: boolean;
   onDateChange?: (slot: CalendarSlot | undefined) => void;
   modalPosition: {
     top: number;
@@ -24,7 +24,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
   selectedSlot: initialSelectedSlot,
   selectableSlot,
   numberOfMonths = 1,
-  mode = 'single',
+  isRangeMode = false,
   onDateChange = () => {},
   modalPosition,
   calendarPickerRef,
@@ -43,7 +43,7 @@ const CalendarPicker: React.FC<CalendarPickerProps> = ({
     selectedSlot: initialSelectedSlot,
     selectableSlot,
     numberOfMonths,
-    mode,
+    isRangeMode,
     onDateChange,
   });
 

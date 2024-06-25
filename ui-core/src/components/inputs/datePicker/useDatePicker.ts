@@ -32,18 +32,15 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
     MODAL_HORIZONTAL_OFFSET
   );
 
-  const isSingleMode = calendarPickerProps.mode === 'single';
-  const isRangeMode = calendarPickerProps.mode === 'range';
-
   const formatSlotToInputValue = (newSelectedSlot: CalendarSlot | undefined) => {
     let formattedDate = '';
 
     if (newSelectedSlot) {
-      if (isSingleMode && newSelectedSlot.start) {
+      if (!calendarPickerProps.isRangeMode && newSelectedSlot.start) {
         formattedDate = formatDateString(newSelectedSlot.start);
       }
 
-      if (isRangeMode) {
+      if (calendarPickerProps.isRangeMode) {
         const { start, end } = newSelectedSlot;
         if (start && end) {
           formattedDate =

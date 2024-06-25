@@ -89,7 +89,7 @@ describe('useCalendarPicker', () => {
 
     describe('Range mode', () => {
       it('should set clicked date as start date when no slot is selected', () => {
-        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const { result } = renderHook(() => useCalendarPicker({ isRangeMode: true }));
         const clickedDate = new Date(2024, february, 1);
         act(() => result.current.handleDayClick(clickedDate));
 
@@ -97,7 +97,7 @@ describe('useCalendarPicker', () => {
       });
 
       it('should clear the slot when the same date is clicked', () => {
-        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const { result } = renderHook(() => useCalendarPicker({ isRangeMode: true }));
         const clickedDate = new Date(2024, february, 1);
         act(() => result.current.handleDayClick(clickedDate));
         act(() => result.current.handleDayClick(clickedDate));
@@ -106,7 +106,7 @@ describe('useCalendarPicker', () => {
       });
 
       it('should set clicked date as start date and previous start date as end date when clicked date is before current start date', () => {
-        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const { result } = renderHook(() => useCalendarPicker({ isRangeMode: true }));
         const firstClickedDate = new Date(2024, february, 2);
         const secondClickedDate = new Date(2024, february, 1);
         act(() => result.current.handleDayClick(firstClickedDate));
@@ -119,7 +119,7 @@ describe('useCalendarPicker', () => {
       });
 
       it('should set clicked date as end date when clicked date is after current start date', () => {
-        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const { result } = renderHook(() => useCalendarPicker({ isRangeMode: true }));
         const firstClickedDate = new Date(2024, february, 1);
         const secondClickedDate = new Date(2024, february, 2);
         act(() => result.current.handleDayClick(firstClickedDate));
@@ -132,7 +132,7 @@ describe('useCalendarPicker', () => {
       });
 
       it('should clear existing slot and set clicked date as start date of new slot when a slot is already defined', () => {
-        const { result } = renderHook(() => useCalendarPicker({ mode: 'range' }));
+        const { result } = renderHook(() => useCalendarPicker({ isRangeMode: true }));
         const firstClickedDate = new Date(2024, february, 1);
         const secondClickedDate = new Date(2024, february, 2);
         const thirdClickedDate = new Date(2024, february, 3);
