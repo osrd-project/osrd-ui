@@ -80,6 +80,8 @@ export type OperationalPoint = {
   importanceLevel?: number; // Lower is better. If null, the point won't be displayed.
 };
 
+export type Axis = 'x' | 'y';
+
 // DATA TRANSLATION TYPES:
 export type TimeToPixel = (time: number) => number;
 export type SpaceToPixel = (position: number) => number;
@@ -89,12 +91,16 @@ export type PointToData = (point: Point) => DataPoint;
 export type DataToPoint = (data: DataPoint) => Point;
 
 // CANVAS SPECIFIC TYPES:
-export type HoveredItem = { layer: PickingLayerType; index: number };
-
 export const PICKING_LAYERS = ['paths'] as const;
 export type PickingLayerType = (typeof PICKING_LAYERS)[number];
-export const LAYERS = ['graduations', 'paths', 'captions', 'overlay'] as const;
+export const LAYERS = ['background', 'graduations', 'paths', 'captions', 'overlay'] as const;
 export type LayerType = (typeof LAYERS)[number];
+
+// PICKING SPECIFIC TYPES:
+export type PickingElement =
+  | { type: 'point'; path: string; point: Point }
+  | { type: 'segment'; path: string; from: Point; to: Point };
+export type HoveredItem = { layer: PickingLayerType; element: PickingElement };
 
 export type DrawingFunction = (
   canvasContext: CanvasRenderingContext2D,
@@ -115,6 +121,7 @@ export type DrawingFunctionHandler = (
 export type CanvasContextType = {
   register: DrawingFunctionHandler;
   unregister: DrawingFunctionHandler;
+  captureCanvases: () => Promise<Blob>;
 };
 
 // MOUSE CONTEXT:
@@ -126,6 +133,36 @@ export type MouseState = {
 
 export type MouseContextType = MouseState & {
   data: DataPoint;
+  hoveredItem: HoveredItem | null;
+};
+
+// STYLES:
+export type SpaceTimeChartTheme = {
+  background: string;
+  breakpoints: number[];
+  timeRanges: number[];
+  pathsStyles: {
+    font: string;
+  };
+  spaceGraduationsStyles: Record<
+    number,
+    { width: number; color: string; opacity?: number; dashArray?: number[] }
+  >;
+  timeCaptionsPriorities: number[][];
+  timeCaptionsStyles: Record<
+    number,
+    {
+      color: string;
+      font: string;
+      fontWeight?: string;
+      topOffset?: number;
+    }
+  >;
+  timeGraduationsPriorities: number[][];
+  timeGraduationsStyles: Record<
+    number,
+    { width: number; color: string; opacity?: number; dashArray?: number[] }
+  >;
 };
 
 // CORE COMPONENT MAIN TYPES:
@@ -148,6 +185,19 @@ export type SpaceTimeChartProps = {
   xOffset?: number;
   yOffset?: number;
 
+  // If true, the time and space axis are swapped:
+  swapAxis?: boolean;
+
+  // If true, the registered position will snap to the closest item if any:
+  enableSnapping?: boolean;
+
+  // Additional options to show/hide context information:
+  hideGrid?: boolean;
+  hidePathsLabels?: boolean;
+
+  // Custom styles:
+  theme?: Partial<SpaceTimeChartTheme>;
+
   // Event handlers:
   onPan?: Handler<{
     isPanning: boolean;
@@ -155,31 +205,59 @@ export type SpaceTimeChartProps = {
     position: Point;
     initialData: DataPoint;
     data: DataPoint;
+    context: SpaceTimeChartContextType;
   }>;
-  onZoom?: Handler<{ delta: number; position: Point; event: WheelEvent }>;
-  onClick?: Handler<{ position: Point; data: DataPoint; event: MouseEvent }>;
-  onMouseMove?: Handler<{ position: Point; data: DataPoint; isHover: boolean; event: MouseEvent }>;
-  onHoveredChildUpdate?: Handler<{ item: HoveredItem | null }>;
+  onZoom?: Handler<{
+    delta: number;
+    position: Point;
+    event: WheelEvent;
+    context: SpaceTimeChartContextType;
+  }>;
+  onClick?: Handler<{
+    position: Point;
+    data: DataPoint;
+    event: MouseEvent;
+    hoveredItem: HoveredItem | null;
+    context: SpaceTimeChartContextType;
+  }>;
+  onMouseMove?: Handler<{
+    position: Point;
+    data: DataPoint;
+    isHover: boolean;
+    hoveredItem: HoveredItem | null;
+    context: SpaceTimeChartContextType;
+  }>;
+  onHoveredChildUpdate?: Handler<{ item: HoveredItem | null; context: SpaceTimeChartContextType }>;
 } & Omit<HTMLProps<HTMLDivElement>, 'onClick' | 'onMouseMove'>;
 
 export type SpaceTimeChartContextType = {
   width: number;
   height: number;
 
+  // Axis-swapping related data:
+  timeAxis: Axis;
+  spaceAxis: Axis;
+  swapAxis: boolean;
+
   // This string is designed to be unique to each rendering:
   fingerprint: string;
 
+  // Picking:
+  pickingElements: PickingElement[];
+  resetPickingElements: () => void;
+  registerPickingElement: (element: PickingElement) => number;
+
   // Scales:
-  xOffset: number;
-  yOffset: number;
+  timePixelOffset: number;
+  spacePixelOffset: number;
   timeOrigin: number;
   timeScale: number;
   spaceOrigin: number;
   spaceScaleTree: NormalizedScaleTree;
 
   // Translation helpers:
-  getX: TimeToPixel;
-  getY: SpaceToPixel;
+  getTimePixel: TimeToPixel;
+  getSpacePixel: SpaceToPixel;
   getPoint: DataToPoint;
   getTime: PixelToTime;
   getSpace: PixelToSpace;
@@ -187,4 +265,12 @@ export type SpaceTimeChartContextType = {
 
   // Useful data:
   operationalPoints: OperationalPoint[];
+
+  // Full theme:
+  theme: SpaceTimeChartTheme;
+
+  // Other options:
+  enableSnapping: boolean;
+  hideGrid: boolean;
+  hidePathsLabels: boolean;
 };

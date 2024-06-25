@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import React, { FC, useState } from 'react';
+import React, { FC, useContext, useState } from 'react';
 import type { Meta } from '@storybook/react';
 
 import { OPERATIONAL_POINTS, PATHS } from './lib/paths';
@@ -16,17 +16,42 @@ import { getDiff } from '../utils/vectors';
 import { Point } from '../lib/types';
 
 import './lib/tailwind-mockup.css';
+import { MouseTracker } from './lib/components';
+import { CanvasContext } from '../lib/context';
+import FileSaver from 'file-saver';
+
+const ScreenshotButton: FC = () => {
+  const { captureCanvases } = useContext(CanvasContext);
+
+  return (
+    <div
+      style={{
+        position: 'absolute',
+        right: 10,
+        bottom: 10,
+      }}
+    >
+      <button
+        onClick={() =>
+          captureCanvases().then((blob) => FileSaver.saveAs(blob, 'space-time-chart.png'))
+        }
+      >
+        Export to PNG
+      </button>
+    </div>
+  );
+};
 
 /**
  * This story aims at showcasing how to handle panning and zooming in a SpaceTimeChart.
  */
 const Wrapper: FC<{
-  xPan: boolean;
-  yPan: boolean;
-  xZoom: boolean;
-  yZoom: boolean;
+  enableSnapping: boolean;
+  hideGrid: boolean;
+  hidePathsLabels: boolean;
+  swapAxis: boolean;
   spaceScaleType: 'linear' | 'proportional';
-}> = ({ xPan, yPan, xZoom, yZoom, spaceScaleType }) => {
+}> = ({ enableSnapping, hideGrid, hidePathsLabels, swapAxis, spaceScaleType }) => {
   const [state, setState] = useState<{
     xOffset: number;
     yOffset: number;
@@ -44,7 +69,14 @@ const Wrapper: FC<{
   return (
     <div className="inset-0">
       <SpaceTimeChart
-        className={cx('inset-0 absolute p-0 m-0', state.panning && 'cursor-grabbing')}
+        className={cx(
+          'inset-0 absolute overflow-hidden p-0 m-0',
+          state.panning && 'cursor-grabbing'
+        )}
+        enableSnapping={enableSnapping}
+        hideGrid={hideGrid}
+        hidePathsLabels={hidePathsLabels}
+        swapAxis={swapAxis}
         operationalPoints={OPERATIONAL_POINTS}
         spaceOrigin={0}
         spaceScales={OPERATIONAL_POINTS.slice(0, -1).map((point, i) => ({
@@ -59,8 +91,6 @@ const Wrapper: FC<{
         xOffset={state.xOffset}
         yOffset={state.yOffset}
         onPan={({ initialPosition, position, isPanning }) => {
-          if (!xPan && !yPan) return;
-
           const diff = getDiff(initialPosition, position);
           setState((state) => {
             // Stop panning:
@@ -82,38 +112,31 @@ const Wrapper: FC<{
             // Keep panning:
             else {
               const { initialOffset } = state.panning;
-              const newState: typeof state = {
+              return {
                 ...state,
+                xOffset: initialOffset.x + diff.x,
+                yOffset: initialOffset.y + diff.y,
               };
-              if (xPan) newState.xOffset = initialOffset.x + diff.x;
-              if (yPan) newState.yOffset = initialOffset.y + diff.y;
-              return newState;
             }
           });
         }}
         onZoom={({ delta, position: { x, y } }) => {
-          // The zoom is quite straightforward. The hardest part is to keep the zoom centered on the
-          // mouse. There is a shorter version in ./utils.ts, used by the other stories.
-          if (!xZoom && !yZoom) return;
-
           setState((state) => {
             const newState = { ...state };
-            if (xZoom) {
-              newState.xZoomLevel = Math.min(
-                Math.max(newState.xZoomLevel * (1 + delta / 10), MIN_X_ZOOM),
-                MAX_X_ZOOM
-              );
-              // This line is to center the zoom on the mouse X position:
-              newState.xOffset = x - ((x - state.xOffset) / state.xZoomLevel) * newState.xZoomLevel;
-            }
-            if (yZoom) {
-              newState.yZoomLevel = Math.min(
-                Math.max(newState.yZoomLevel * (1 + delta / 10), MIN_Y_ZOOM),
-                MAX_Y_ZOOM
-              );
-              // This line is to center the zoom on the mouse Y position:
-              newState.yOffset = y - ((y - state.yOffset) / state.yZoomLevel) * newState.yZoomLevel;
-            }
+
+            newState.xZoomLevel = Math.min(
+              Math.max(newState.xZoomLevel * (1 + delta / 10), MIN_X_ZOOM),
+              MAX_X_ZOOM
+            );
+            newState.yZoomLevel = Math.min(
+              Math.max(newState.yZoomLevel * (1 + delta / 10), MIN_Y_ZOOM),
+              MAX_Y_ZOOM
+            );
+
+            // These line is to center the zoom on the mouse Y position:
+            newState.xOffset = x - ((x - state.xOffset) / state.xZoomLevel) * newState.xZoomLevel;
+            newState.yOffset = y - ((y - state.yOffset) / state.yZoomLevel) * newState.yZoomLevel;
+
             return newState;
           });
         }}
@@ -121,33 +144,35 @@ const Wrapper: FC<{
         {PATHS.map((path) => (
           <PathLayer key={path.id} path={path} color={path.color} />
         ))}
+        <MouseTracker />
+        <ScreenshotButton />
       </SpaceTimeChart>
     </div>
   );
 };
 
 export default {
-  title: 'SpaceTimeChart/Panning and zooming',
+  title: 'SpaceTimeChart/Options',
   component: Wrapper,
   argTypes: {
-    xPan: {
-      name: 'Enable panning on the X axis?',
+    enableSnapping: {
+      name: 'Enable snapping?',
       defaultValue: true,
       control: { type: 'boolean' },
     },
-    yPan: {
-      name: 'Enable panning on the Y axis?',
-      defaultValue: true,
+    hideGrid: {
+      name: 'Hide grid?',
+      defaultValue: false,
       control: { type: 'boolean' },
     },
-    xZoom: {
-      name: 'Enable zooming on the X axis?',
-      defaultValue: true,
+    hidePathsLabels: {
+      name: 'Hide paths labels?',
+      defaultValue: false,
       control: { type: 'boolean' },
     },
-    yZoom: {
-      name: 'Enable zooming on the Y axis?',
-      defaultValue: true,
+    swapAxis: {
+      name: 'Swap time and space axis?',
+      defaultValue: false,
       control: { type: 'boolean' },
     },
     spaceScaleType: {
@@ -162,10 +187,10 @@ export default {
 export const DefaultArgs = {
   name: 'Default arguments',
   args: {
-    xPan: true,
-    yPan: true,
-    xZoom: true,
-    yZoom: true,
+    enableSnapping: true,
+    hideGrid: false,
+    hidePathsLabels: false,
+    swapAxis: false,
     spaceScaleType: 'linear',
   },
 };

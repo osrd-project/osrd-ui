@@ -2,13 +2,13 @@ import cx from 'classnames';
 import React, { FC, useMemo, useState } from 'react';
 import type { Meta } from '@storybook/react';
 
-import { getPaths, PATHS } from './assets/paths';
+import { getPaths, PATHS } from './lib/paths';
 import { SpaceTimeChart, PathLayer } from '../';
-import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL, zoom } from './utils';
+import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL, zoom } from './lib/utils';
 import { getDiff } from '../utils/vectors';
 import { OperationalPoint, Point } from '../lib/types';
 
-import './tailwind-mockup.css';
+import './lib/tailwind-mockup.css';
 import { random, range } from 'lodash';
 import { KILOMETER, MINUTE } from '../lib/consts';
 
@@ -142,8 +142,8 @@ const Wrapper: FC<{
           }));
         }}
       >
-        {paths.map((path, i) => (
-          <PathLayer key={path.id} index={i} path={path} color={path.color} />
+        {paths.map((path) => (
+          <PathLayer key={path.id} path={path} color={path.color} />
         ))}
       </SpaceTimeChart>
     </div>

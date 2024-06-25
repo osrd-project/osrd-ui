@@ -1,4 +1,4 @@
-import { clamp } from 'lodash';
+import { clamp, inRange } from 'lodash';
 
 import {
   NormalizedScaleTree,
@@ -12,6 +12,8 @@ import {
   Point,
   DataToPoint,
   DataPoint,
+  Axis,
+  PathData,
 } from '../lib/types';
 
 /**
@@ -147,7 +149,7 @@ export function getPixelToTime(
   pixelOffset: number,
   timeScale: number
 ): PixelToTime {
-  return (x: number) => (x - pixelOffset) * timeScale + timeOrigin;
+  return (timePixel: number) => (timePixel - pixelOffset) * timeScale + timeOrigin;
 }
 
 export function getSpaceToPixel(
@@ -169,24 +171,62 @@ export function getPixelToSpace(
   pixelOffset: number,
   binaryTree: NormalizedScaleTree
 ): PixelToSpace {
-  return (y: number) => {
-    const { from, pixelFrom, coefficient } = getNormalizedScaleAtPixel(y - pixelOffset, binaryTree);
-    return spaceOrigin + from + (y - pixelOffset - pixelFrom) * coefficient;
+  return (spacePixel: number) => {
+    const { from, pixelFrom, coefficient } = getNormalizedScaleAtPixel(
+      spacePixel - pixelOffset,
+      binaryTree
+    );
+    return spaceOrigin + from + (spacePixel - pixelOffset - pixelFrom) * coefficient;
   };
 }
 
-export function getPointToData(getTime: PixelToTime, getSpace: PixelToSpace): PointToData {
-  return ({ x, y }: Point) => ({
-    time: getTime(x),
-    position: getSpace(y),
+export function getPointToData(
+  getTime: PixelToTime,
+  getSpace: PixelToSpace,
+  timeAxis: Axis,
+  spaceAxis: Axis
+): PointToData {
+  return (point: Point) => ({
+    time: getTime(point[timeAxis]),
+    position: getSpace(point[spaceAxis]),
   });
 }
 
-export function getDataToPoint(getX: TimeToPixel, getY: SpaceToPixel): DataToPoint {
-  return ({ time, position }: DataPoint) => ({
-    x: getX(time),
-    y: getY(position),
+export function getDataToPoint(
+  getTimePixel: TimeToPixel,
+  getSpacePixel: SpaceToPixel,
+  timeAxis: Axis,
+  spaceAxis: Axis
+): DataToPoint {
+  return ({ time, position }: DataPoint) =>
+    ({
+      [timeAxis]: getTimePixel(time),
+      [spaceAxis]: getSpacePixel(position),
+    }) as Point;
+}
+
+/**
+ * This function takes a path and a time, a returns the position of the train at the given time, or
+ * the position at the closest time to the path existence.
+ */
+export function getSpaceAtTime(path: PathData, time: number): number {
+  const segments = path.points.slice(0, -1).map((p, i) => [p, path.points[i + 1]]);
+  const matchingSegment = segments.find(([p1, p2]) => inRange(time, p1.time, p2.time));
+
+  if (matchingSegment) {
+    const [p1, p2] = matchingSegment;
+    return p1.position + ((time - p1.time) / (p2.time - p1.time)) * (p2.position - p1.position);
+  }
+
+  let minPoint = path.points[0];
+  let maxPoint = path.points[0];
+  path.points.slice(1).forEach((point) => {
+    if (point.time < minPoint.time) minPoint = point;
+    if (point.time > maxPoint.time) maxPoint = point;
   });
+
+  if (minPoint.time > time) return minPoint.position;
+  return maxPoint.position;
 }
 
 /**

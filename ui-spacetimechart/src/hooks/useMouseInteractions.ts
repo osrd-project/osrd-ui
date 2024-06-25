@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   DataPoint,
-  MouseState,
+  MouseContextType,
   Point,
   SpaceTimeChartContextType,
   SpaceTimeChartProps,
@@ -12,23 +12,26 @@ import { getEventPosition, getEventWheelDelta } from '../utils/events';
 type Handlers = Pick<SpaceTimeChartProps, 'onPan' | 'onMouseMove' | 'onClick' | 'onZoom'>;
 
 /**
- * This hook handles SpaceTimeChart mouse tracking and interactions.
+ * This hook handles SpaceTimeChart mouse interactions.
  * It is an internal hook, and should only be used inside SpaceTimeChart.
  */
-export function useMouse(
+export function useMouseInteractions(
   dom: HTMLElement | null,
+  { position, hoveredItem, down, isHover }: MouseContextType,
   handlers: Handlers,
-  getData: SpaceTimeChartContextType['getData']
+  context: SpaceTimeChartContextType
 ) {
+  const contextRef = useRef(context);
   const handlersRef = useRef<Handlers>(handlers);
   const [panningState, setPanningState] = useState<
     { type: 'idle' } | { type: 'panning'; initialPosition: Point; initialData: DataPoint }
   >({ type: 'idle' });
-  const [mouseState, setMouseState] = useState<MouseState>({
-    isHover: false,
-    position: { x: NaN, y: NaN },
-  });
-  const { position, down } = mouseState;
+
+  // Cache latest context in ref:
+  useEffect(() => {
+    contextRef.current = context;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [context.fingerprint]);
 
   useEffect(() => {
     handlersRef.current = handlers;
@@ -41,60 +44,19 @@ export function useMouse(
 
       const { onClick } = handlersRef.current;
       if (onClick) {
-        const position = getEventPosition(event, dom);
         onClick({
           event,
           position,
-          data: getData(position),
+          data: contextRef.current.getData(position),
+          hoveredItem,
+          context: contextRef.current,
         });
       }
     },
-    [dom, getData]
+    [dom, hoveredItem, position]
   );
-  const downHandler = useCallback(
-    (e: MouseEvent) => {
-      if (!dom) return;
-
-      setMouseState((state) => ({
-        ...state,
-        down: { ctrl: e.ctrlKey, shift: e.shiftKey },
-      }));
-    },
-    [dom]
-  );
-  const upHandler = useCallback(() => {
-    if (!dom) return;
-
-    setMouseState((state) => ({ ...state, down: undefined }));
-  }, [dom]);
-  const moveHandler = useCallback(
-    (event: MouseEvent) => {
-      if (!dom) return;
-
-      const position = getEventPosition(event, dom);
-      const { x, y } = position;
-      const width = dom.offsetWidth;
-      const height = dom.offsetHeight;
-      const isHover = x >= 0 && x <= width && y >= 0 && y <= height;
-      setMouseState((state) => ({
-        ...state,
-        position,
-        isHover,
-      }));
-
-      const { onMouseMove } = handlersRef.current;
-      if (onMouseMove)
-        onMouseMove({
-          event,
-          isHover,
-          position,
-          // TODO
-          data: { position: NaN, time: NaN },
-        });
-    },
-    [dom]
-  );
-  const wheelHandler = useCallback(
+  let wheelHandler: (event: WheelEvent) => void;
+  wheelHandler = useCallback(
     (event: WheelEvent) => {
       const { onZoom } = handlersRef.current;
       if (onZoom && dom)
@@ -102,6 +64,7 @@ export function useMouse(
           delta: getEventWheelDelta(event),
           position: getEventPosition(event, dom),
           event,
+          context: contextRef.current,
         });
     },
     [dom]
@@ -115,25 +78,6 @@ export function useMouse(
       dom.removeEventListener('click', clickHandler);
     };
   }, [dom, clickHandler]);
-  useEffect(() => {
-    if (!dom) return;
-    dom.addEventListener('mousedown', downHandler);
-    return () => {
-      dom.removeEventListener('mousedown', downHandler);
-    };
-  }, [dom, downHandler]);
-  useEffect(() => {
-    document.addEventListener('mouseup', upHandler);
-    return () => {
-      document.removeEventListener('mouseup', upHandler);
-    };
-  }, [upHandler]);
-  useEffect(() => {
-    document.addEventListener('mousemove', moveHandler);
-    return () => {
-      document.removeEventListener('mousemove', moveHandler);
-    };
-  }, [moveHandler]);
   useEffect(() => {
     if (!dom) return;
     dom.addEventListener('wheel', wheelHandler);
@@ -151,7 +95,7 @@ export function useMouse(
       setPanningState({
         type: 'panning',
         initialPosition: position,
-        initialData: getData(position),
+        initialData: contextRef.current.getData(position),
       });
     } else {
       // Stop panning:
@@ -160,8 +104,9 @@ export function useMouse(
           isPanning: false,
           position,
           initialPosition: panningState.initialPosition,
-          data: getData(position),
+          data: contextRef.current.getData(position),
           initialData: panningState.initialData,
+          context: contextRef.current,
         });
 
       if (panningState.type !== 'idle') setPanningState({ type: 'idle' });
@@ -171,18 +116,27 @@ export function useMouse(
 
   // Listen to "move" updates:
   useEffect(() => {
-    const { onPan } = handlersRef.current;
+    const { onPan, onMouseMove } = handlersRef.current;
+
+    if (onMouseMove) {
+      onMouseMove({
+        position,
+        isHover: isHover,
+        data: contextRef.current.getData(position),
+        hoveredItem,
+        context: contextRef.current,
+      });
+    }
 
     if (panningState.type === 'panning' && onPan)
       onPan({
         isPanning: true,
         position,
         initialPosition: panningState.initialPosition,
-        data: getData(position),
+        data: contextRef.current.getData(position),
         initialData: panningState.initialData,
+        context: contextRef.current,
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [position]);
-
-  return mouseState;
+  }, [position.x, position.y]);
 }

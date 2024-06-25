@@ -17,6 +17,7 @@ import {
 import { useSize } from './useSize';
 import { colorToIndex, rgbToHex } from '../utils/colors';
 import { CanvasContext } from '../lib/context';
+import getPNGBlob from '../utils/png';
 
 const PICKING = 'picking';
 const RENDERING = 'rendering';
@@ -51,6 +52,7 @@ export function useCanvas(
    */
   const drawPicking = useCallback(
     (stcContext: SpaceTimeChartContextType, layers?: Set<LayerType>) => {
+      stcContext.resetPickingElements();
       PICKING_LAYERS.forEach((layer) => {
         if (layers && !layers.has(layer)) return;
 
@@ -154,6 +156,14 @@ export function useCanvas(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const captureCanvases = useCallback(() => {
+    return getPNGBlob(
+      canvasesRef.current,
+      LAYERS.map((layer) => `${RENDERING}-${layer}`),
+      stcContextRef.current.theme.background
+    );
+  }, []);
+
   // Create all canvas layers:
   useEffect(() => {
     if (!dom) return;
@@ -221,9 +231,11 @@ export function useCanvas(
         const [r, g, b, a] = ctx.getImageData(position.x, position.y, 1, 1).data;
         if (a === 255) {
           const color = rgbToHex(r, g, b);
+          const index = colorToIndex(color);
+          const element = stcContextRef.current.pickingElements[index];
           newHoveredItem = {
             layer,
-            index: colorToIndex(color),
+            element,
           };
           return true;
         }
@@ -239,8 +251,8 @@ export function useCanvas(
 
   // Keep the canvas context up to date:
   const canvasContext = useMemo<CanvasContextType>(
-    () => ({ register, unregister }),
-    [register, unregister]
+    () => ({ register, unregister, captureCanvases }),
+    [register, unregister, captureCanvases]
   );
 
   return {

@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
 import type { Meta } from '@storybook/react';
 
-import { OPERATIONAL_POINTS, PATHS } from './assets/paths';
+import { OPERATIONAL_POINTS, PATHS } from './lib/paths';
 import { SpaceTimeChart, PathLayer } from '../';
-import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL } from './utils';
+import { X_ZOOM_LEVEL, Y_ZOOM_LEVEL } from './lib/utils';
 
-import './tailwind-mockup.css';
+import './lib/tailwind-mockup.css';
 
 /**
  * This story aims at showcasing how to render a SpaceTimeChart.
@@ -34,8 +34,8 @@ const Wrapper: FC<{
       xOffset={xOffset}
       yOffset={yOffset}
     >
-      {PATHS.map((path, i) => (
-        <PathLayer key={path.id} index={i} path={path} color={path.color} />
+      {PATHS.map((path) => (
+        <PathLayer key={path.id} path={path} color={path.color} />
       ))}
     </SpaceTimeChart>
   );
