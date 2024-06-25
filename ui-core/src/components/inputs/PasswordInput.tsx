@@ -6,12 +6,12 @@ import cx from 'classnames';
 
 export type PasswordInputProps = InputProps;
 export const PasswordInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ inputFieldWrapperClassname, ...restProps }, ref) => {
+  ({ inputFieldWrapperClassname, ...otherProps }, ref) => {
     const [showPassword, toggleShowPassword] = useState(false);
 
     return (
       <Input
-        {...restProps}
+        {...otherProps}
         type={showPassword ? 'text' : 'password'}
         trailingContent={{
           content: showPassword ? <EyeClosed /> : <Eye />,

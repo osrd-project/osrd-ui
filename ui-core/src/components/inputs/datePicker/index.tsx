@@ -1,3 +1,3 @@
-export { default as DatePicker, DatePickerProps } from './DatePicker';
-export { CalendarPickerProps } from './CalendarPicker';
-export { CalendarSlot } from './type';
+export { default as DatePicker, type DatePickerProps } from './DatePicker';
+export { type CalendarPickerProps } from './CalendarPicker';
+export { type CalendarSlot } from './type';
