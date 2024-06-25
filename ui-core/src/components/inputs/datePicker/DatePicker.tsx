@@ -15,9 +15,9 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
     inputValue,
     showPicker,
     modalPosition,
+    inputRef,
     calendarPickerRef,
     setShowPicker,
-    setRefs,
     handleCalendarPickerChange,
     handleInputClick,
   } = useDatePicker(props);
@@ -26,7 +26,7 @@ export const DatePicker: React.FC<DatePickerProps> = (props) => {
     <div className="date-picker">
       <div>
         <Input
-          ref={setRefs}
+          ref={inputRef}
           value={inputValue}
           onClick={handleInputClick}
           {...restInputProps}

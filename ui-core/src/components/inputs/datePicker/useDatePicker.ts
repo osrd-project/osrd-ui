@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from 'react';
-import { withMask } from 'use-mask-input';
 import useClickOutside from '../../hooks/useOutsideClick';
 import { useModalPosition } from '../../hooks/useModalPosition';
 import { CalendarSlot } from './type';
@@ -8,14 +7,13 @@ import { DatePickerProps } from './DatePicker';
 
 const MODAL_HORIZONTAL_OFFSET = -24;
 const MODAL_VERTICAL_OFFSET = 3;
-const INPUT_FORMAT = 'dd/mm/yy';
 
 export default function useDatePicker({ calendarPickerProps, inputProps }: DatePickerProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
   const calendarPickerRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   useClickOutside(calendarPickerRef, (e) => {
     // Do not close the picker if any children in input wrapper is clicked.
     // This wrapper include, the input itself, the trailing content (which contains the calendar icon) and the leading content
@@ -71,22 +69,13 @@ export default function useDatePicker({ calendarPickerProps, inputProps }: DateP
     }
   }, [showPicker, calculatePosition]);
 
-  const setRefs = (el: HTMLInputElement | null) => {
-    if (el) {
-      inputRef.current = el;
-      withMask('datetime', {
-        inputFormat: INPUT_FORMAT,
-      });
-    }
-  };
-
   return {
     showPicker,
     inputValue,
     modalPosition,
+    inputRef,
     calendarPickerRef,
     setShowPicker,
-    setRefs,
     handleCalendarPickerChange,
     handleInputClick,
   };
