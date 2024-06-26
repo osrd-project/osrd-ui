@@ -46,7 +46,7 @@ export const drawCursor = (
   const { minSpeed, speedRange } = speedRangeValues(store);
   const { maxPosition } = maxPositionValues(store);
 
-  const heightWithoutLayers = getAdaptiveHeight(height, store.linearDisplay, false);
+  const heightWithoutLayers = getAdaptiveHeight(height, store.layersDisplay, false);
   const cursorBoxHeight = heightWithoutLayers - MARGIN_BOTTOM - MARGIN_TOP;
   const cursorBoxWidth = width - MARGIN_LEFT - MARGIN_RIGHT;
 

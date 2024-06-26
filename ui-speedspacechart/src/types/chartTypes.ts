@@ -20,23 +20,24 @@ export type Store = {
     y: number | null;
   };
   detailsBoxDisplay: {
+    [key: string]: boolean;
     energySource: boolean;
     tractionStatus: boolean;
+    declivities: boolean;
     eletricalProfiles: boolean;
     powerRestrictions: boolean;
-    gradient: boolean;
   };
-  linearDisplay: {
-    fastestDrive: boolean;
+  layersDisplay: {
+    [key: string]: boolean;
+    steps: boolean;
+    declivities: boolean;
     speedLimits: boolean;
-    speedAnomalies: boolean;
+    temporarySpeedLimits: boolean;
     electricalProfiles: boolean;
     powerRestrictions: boolean;
-    declivities: boolean;
     speedLimitTags: boolean;
-    signals: boolean;
-    steps: boolean;
   };
+  isSettingsPanelOpened: boolean;
 };
 
 export type TrainDetails = {

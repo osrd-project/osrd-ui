@@ -28,10 +28,7 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
     stops: [],
     electrification: [],
     slopes: [],
-    electricalProfiles: {
-      boundaries: [],
-      values: [],
-    },
+    electricalProfiles: undefined,
     ratioX: 1,
     leftOffset: 0,
     cursor: {
@@ -41,26 +38,25 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
     detailsBoxDisplay: {
       energySource: true,
       tractionStatus: true,
+      declivities: true,
       eletricalProfiles: true,
       powerRestrictions: true,
-      gradient: true,
     },
-    linearDisplay: {
-      fastestDrive: true,
+    layersDisplay: {
+      steps: true,
+      declivities: false,
       speedLimits: false,
-      speedAnomalies: false,
+      temporarySpeedLimits: false,
       electricalProfiles: true,
       powerRestrictions: false,
-      declivities: false,
       speedLimitTags: false,
-      signals: false,
-      steps: true,
     },
+    isSettingsPanelOpened: false,
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
-  const dynamicHeight = getAdaptiveHeight(height, store.linearDisplay);
-  const dynamicHeightOffset = getAdaptiveHeight(HEIGHT_OFFSET, store.linearDisplay);
+  const dynamicHeight = getAdaptiveHeight(height, store.layersDisplay);
+  const dynamicHeightOffset = getAdaptiveHeight(HEIGHT_OFFSET, store.layersDisplay);
 
   const [showDetailsBox, setShowDetailsBox] = useState(false);
 

@@ -54,17 +54,17 @@ export const clearCanvas = (ctx: CanvasRenderingContext2D, width: number, height
 /**
  * Calculates the adaptive height based on the height supplied and the lineaires displayed.
  * @param height - The initial height value.
- * @param linearDisplay - The linear display options.
+ * @param layersDisplay - The linear display options.
  * @param isAddLayers - A flag to add or remove layers. Default is true.
  * @returns The calculated adaptive height.
  */
 export const getAdaptiveHeight = (
   height: number,
-  linearDisplay: Store['linearDisplay'],
+  layersDisplay: Store['layersDisplay'],
   isAddLayers: boolean = true
 ): number => {
   let currentHeight = height;
-  const { electricalProfiles, powerRestrictions, speedLimitTags } = linearDisplay;
+  const { electricalProfiles, powerRestrictions, speedLimitTags } = layersDisplay;
   if (electricalProfiles) {
     isAddLayers
       ? (currentHeight += LAYERS_HEIGHTS.ELECTRICAL_PROFILES)
