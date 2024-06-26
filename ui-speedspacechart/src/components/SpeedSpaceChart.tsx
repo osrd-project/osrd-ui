@@ -12,7 +12,7 @@ import StepLayer from './layers/StepLayer';
 import ReticleLayer from './layers/ReticleLayer';
 import { resetZoom } from './helpers/layersManager';
 import StepNamesLayer from './layers/StepNamesLayer';
-import { getGraphOffsets, getHeightWithLayers } from './utils';
+import { getGraphOffsets, getAdaptiveHeight } from './utils';
 import ElectricalProfileLayer from './layers/ElectricalProfileLayer';
 
 export type SpeedSpaceChartProps = {
@@ -59,8 +59,8 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
-  const dynamicHeight = getHeightWithLayers(height, store.linearDisplay);
-  const dynamicHeightOffset = getHeightWithLayers(HEIGHT_OFFSET, store.linearDisplay);
+  const dynamicHeight = getAdaptiveHeight(height, store.linearDisplay);
+  const dynamicHeightOffset = getAdaptiveHeight(HEIGHT_OFFSET, store.linearDisplay);
 
   const [showDetailsBox, setShowDetailsBox] = useState(false);
 

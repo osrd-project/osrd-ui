@@ -1,4 +1,4 @@
-import { clearCanvas, maxPositionValues, speedRangeValues } from '../../utils';
+import { clearCanvas, getAdaptiveHeight, maxPositionValues, speedRangeValues } from '../../utils';
 import type { Store } from '../../../types/chartTypes';
 import { MARGINS } from '../../const';
 import { ConsolidatedPositionSpeedTime, GradientPosition } from '../../../types/simulationTypes';
@@ -46,8 +46,10 @@ export const drawCursor = (
   const { minSpeed, speedRange } = speedRangeValues(store);
   const { maxPosition } = maxPositionValues(store);
 
-  const cursorBoxHeight = height - MARGIN_BOTTOM - MARGIN_TOP;
+  const heightWithoutLayers = getAdaptiveHeight(height, store.linearDisplay, false);
+  const cursorBoxHeight = heightWithoutLayers - MARGIN_BOTTOM - MARGIN_TOP;
   const cursorBoxWidth = width - MARGIN_LEFT - MARGIN_RIGHT;
+
   const xPositionReference = (ref: number) =>
     ref * ((cursorBoxWidth - CURVE_MARGIN_SIDES) / maxPosition) * store.ratioX +
     store.leftOffset +

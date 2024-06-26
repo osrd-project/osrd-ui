@@ -51,20 +51,34 @@ export const clearCanvas = (ctx: CanvasRenderingContext2D, width: number, height
   ctx.clearRect(0, 0, width, height);
 };
 
-export const getHeightWithLayers = (
+/**
+ * Calculates the adaptive height based on the height supplied and the lineaires displayed.
+ * @param height - The initial height value.
+ * @param linearDisplay - The linear display options.
+ * @param isAddLayers - A flag to add or remove layers. Default is true.
+ * @returns The calculated adaptive height.
+ */
+export const getAdaptiveHeight = (
   height: number,
-  linearDisplay: Store['linearDisplay']
+  linearDisplay: Store['linearDisplay'],
+  isAddLayers: boolean = true
 ): number => {
   let currentHeight = height;
   const { electricalProfiles, powerRestrictions, speedLimitTags } = linearDisplay;
   if (electricalProfiles) {
-    currentHeight += LAYERS_HEIGHTS.ELECTRICAL_PROFILES;
+    isAddLayers
+      ? (currentHeight += LAYERS_HEIGHTS.ELECTRICAL_PROFILES)
+      : (currentHeight -= LAYERS_HEIGHTS.ELECTRICAL_PROFILES);
   }
   if (powerRestrictions) {
-    currentHeight += LAYERS_HEIGHTS.POWER_RESTRICTIONS;
+    isAddLayers
+      ? (currentHeight += LAYERS_HEIGHTS.POWER_RESTRICTIONS)
+      : (currentHeight -= LAYERS_HEIGHTS.POWER_RESTRICTIONS);
   }
   if (speedLimitTags) {
-    currentHeight += LAYERS_HEIGHTS.SPEED_LIMIT_TAGS;
+    isAddLayers
+      ? (currentHeight += LAYERS_HEIGHTS.SPEED_LIMIT_TAGS)
+      : (currentHeight -= LAYERS_HEIGHTS.SPEED_LIMIT_TAGS);
   }
   return currentHeight;
 };
