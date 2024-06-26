@@ -1,5 +1,5 @@
 import type { Store } from '../types/chartTypes';
-import { LAYERS_HEIGHTS } from './const';
+import { LAYERS_HEIGHTS, MARGINS } from './const';
 
 type SpeedRangeValues = {
   minSpeed: number;
@@ -33,7 +33,7 @@ export const speedRangeValues = (store: Store): SpeedRangeValues => {
 };
 
 /**
- * given a  store including a list of speed data and a ratio value, return the max position, the rounded max position and the intermediate ticks position
+ * Given a  store including a list of speed data and a ratio value, return the max position, the rounded max position and the intermediate ticks position
  * @param store
  */
 export const maxPositionValues = (store: Store): MaxPositionValues => {
@@ -67,4 +67,30 @@ export const getHeightWithLayers = (
     currentHeight += LAYERS_HEIGHTS.SPEED_LIMIT_TAGS;
   }
   return currentHeight;
+};
+
+/**
+ * Calculates the position on the graph scale based on the given parameters.
+ * @param position - The current position.
+ * @param maxPosition - The maximum position.
+ * @param width - The width of the graph.
+ * @param ratioX - The X-axis ratio.
+ * @param margins - The margins of the graph.
+ * @returns The calculated position on the graph scale.
+ */
+export const positionOnGraphScale = (
+  position: number,
+  maxPosition: number,
+  width: number,
+  ratioX: number,
+  margins: typeof MARGINS
+) => {
+  return (
+    ((width - margins.CURVE_MARGIN_SIDES - margins.MARGIN_LEFT - margins.MARGIN_RIGHT) /
+      maxPosition) *
+      position *
+      ratioX +
+    margins.MARGIN_LEFT +
+    margins.CURVE_MARGIN_SIDES / 2
+  );
 };

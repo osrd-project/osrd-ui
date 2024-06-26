@@ -1,22 +1,6 @@
-import { clearCanvas, maxPositionValues } from '../../utils';
+import { clearCanvas, maxPositionValues, positionOnGraphScale } from '../../utils';
 import type { Store } from '../../../types/chartTypes';
 import { MARGINS } from '../../const';
-
-const positionOnGraphScale = (
-  position: number,
-  maxPosition: number,
-  width: number,
-  ratioX: number
-) => {
-  return (
-    ((width - MARGINS.CURVE_MARGIN_SIDES - MARGINS.MARGIN_LEFT - MARGINS.MARGIN_RIGHT) /
-      maxPosition) *
-      position *
-      ratioX +
-    MARGINS.MARGIN_LEFT +
-    MARGINS.CURVE_MARGIN_SIDES / 2
-  );
-};
 
 export const drawElectricalProfile = (
   ctx: CanvasRenderingContext2D,
@@ -39,14 +23,14 @@ export const drawElectricalProfile = (
     const x =
       index === 0
         ? MARGIN_LEFT + CURVE_MARGIN_SIDES / 2
-        : positionOnGraphScale(boundaries[index - 1], maxPosition, width, ratioX);
+        : positionOnGraphScale(boundaries[index - 1], maxPosition, width, ratioX, MARGINS);
 
     let startHeight = height - MARGIN_BOTTOM + 8;
 
     const profileWidth =
       index === values.length - 1
-        ? positionOnGraphScale(boundaries[index], maxPosition, width, ratioX) - x
-        : positionOnGraphScale(boundaries[index], maxPosition, width, ratioX) - x;
+        ? positionOnGraphScale(boundaries[index], maxPosition, width, ratioX, MARGINS) - x
+        : positionOnGraphScale(boundaries[index], maxPosition, width, ratioX, MARGINS) - x;
 
     if ('profile' in data) {
       const { profile, profileColor, heightLevel } = data;
