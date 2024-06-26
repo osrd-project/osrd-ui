@@ -33053,7 +33053,7 @@ export const SAMPLE_DATA: OsrdSimulationState = {
         handled: true,
         profile: 'PRO4-5',
         profileColor: '#6D8B56',
-        heightLevel: 4,
+        heightLevel: 9,
       },
     ],
   },

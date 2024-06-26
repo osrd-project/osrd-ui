@@ -34,6 +34,8 @@ export const drawElectricalProfile = (
 
     if ('profile' in data) {
       const { profile, profileColor, heightLevel } = data;
+      const heightLevelMax = heightLevel > 7 ? 7 : heightLevel;
+
       if (profile === 'incompatible') {
         // Incompatible profile
         ctx.beginPath();
@@ -47,11 +49,12 @@ export const drawElectricalProfile = (
 
         ctx.fillStyle = profileColor;
 
-        startHeight += heightLevel * 4;
+        startHeight += heightLevelMax * 4;
 
-        const profileHeight = 40 - heightLevel * 4;
+        const profileHeight = 40 - heightLevelMax * 4;
 
         ctx.fillRect(x, startHeight, profileWidth, profileHeight);
+        ctx.stroke();
 
         if (
           cursor.y &&
@@ -64,17 +67,25 @@ export const drawElectricalProfile = (
           ctx.beginPath();
           ctx.fillStyle = profileColor;
           ctx.globalAlpha = 0.2;
-          ctx.fillRect(x, MARGIN_TOP, profileWidth, height);
+          ctx.fillRect(x, MARGIN_TOP, profileWidth, height - 30);
           ctx.globalAlpha = 1;
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.strokeStyle = '#FFF';
+          ctx.lineWidth = 2;
+          ctx.strokeRect(x + 1, startHeight + 1, profileWidth - 2, profileHeight - 2);
+          ctx.stroke();
 
           if (profileWidth > 50) {
+            ctx.beginPath();
             ctx.fillStyle = '#1F1B17';
             ctx.font = 'bold 32px IBM Plex Sans';
             ctx.textAlign = 'center';
             ctx.fillText(`${profile}`, x + profileWidth / 2, height / 2, profileWidth - 10);
+            ctx.stroke();
           }
         }
-        ctx.stroke();
       }
     } else {
       ctx.beginPath();
