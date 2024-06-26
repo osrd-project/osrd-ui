@@ -35,7 +35,7 @@ export const drawElectricalProfile = (
     if ('profile' in data) {
       const { profile, profileColor, heightLevel } = data;
       if (profile === 'incompatible') {
-        // Imcompatible profile
+        // Incompatible profile
         ctx.beginPath();
         ctx.fillStyle = profileColor;
         for (let i = 0; i < 9; i++) {
@@ -67,10 +67,12 @@ export const drawElectricalProfile = (
           ctx.fillRect(x, MARGIN_TOP, profileWidth, height);
           ctx.globalAlpha = 1;
 
-          ctx.fillStyle = '#1F1B17';
-          ctx.font = 'bold 32px IBM Plex Sans';
-          ctx.textAlign = 'center';
-          ctx.fillText(`${profile}`, x + profileWidth / 2, height / 2, profileWidth - 10);
+          if (profileWidth > 50) {
+            ctx.fillStyle = '#1F1B17';
+            ctx.font = 'bold 32px IBM Plex Sans';
+            ctx.textAlign = 'center';
+            ctx.fillText(`${profile}`, x + profileWidth / 2, height / 2, profileWidth - 10);
+          }
         }
         ctx.stroke();
       }
