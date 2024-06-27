@@ -2,6 +2,7 @@ import type {
   ConsolidatedPositionSpeedTime,
   ElectrificationRange,
   GradientPosition,
+  OsrdSimulationState,
   Slope,
   Stop,
 } from './simulationTypes';
@@ -17,6 +18,25 @@ export type Store = {
     x: number | null;
     y: number | null;
   };
+  detailsBoxDisplay: {
+    energySource: boolean;
+    tractionStatus: boolean;
+    eletricalProfiles: boolean;
+    powerRestrictions: boolean;
+    gradient: boolean;
+  };
+  linearDisplay: {
+    fastestDrive: boolean;
+    speedLimits: boolean;
+    speedAnomalies: boolean;
+    electricalProfiles: boolean;
+    powerRestrictions: boolean;
+    declivities: boolean;
+    speedLimitTags: boolean;
+    signals: boolean;
+    steps: boolean;
+  };
+  speedLimitTags?: OsrdSimulationState['speedLimitTags'];
 };
 
 export type TrainDetails = {
