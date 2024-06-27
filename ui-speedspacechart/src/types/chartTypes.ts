@@ -2,6 +2,7 @@ import type {
   ConsolidatedPositionSpeedTime,
   ElectrificationRange,
   GradientPosition,
+  OsrdSimulationState,
   Slope,
   Stop,
 } from './simulationTypes';
@@ -35,6 +36,7 @@ export type Store = {
     signals: boolean;
     steps: boolean;
   };
+  speedLimitTags?: OsrdSimulationState['speedLimitTags'];
 };
 
 export type TrainDetails = {

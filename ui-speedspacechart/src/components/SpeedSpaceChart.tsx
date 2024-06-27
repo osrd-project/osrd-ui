@@ -13,6 +13,7 @@ import ReticleLayer from './layers/ReticleLayer';
 import { resetZoom } from './helpers/layersManager';
 import StepNamesLayer from './layers/StepNamesLayer';
 import { getGraphOffsets, getHeightWithLayers } from './utils';
+import SpeedLimitTagsLayer from './layers/SpeedLimitTagsLayer';
 
 export type SpeedSpaceChartProps = {
   width: number;
@@ -52,6 +53,10 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       signals: false,
       steps: true,
     },
+    speedLimitTags: {
+      position: [],
+      values: [],
+    },
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
@@ -77,23 +82,22 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       stops: data.simulation.present.trains[0].base.stops || [],
       electrification: data.simulation.present.trains[0].electrification_ranges || [],
       slopes: data.simulation.present.trains[0].slopes || [],
-      speedlimitTags: data.simulation.present.trains[0].speed_limit_tags || [],
+      speedLimitTags: data.speedLimitTags || { position: [], values: [] },
     };
 
-    if (
-      storeData.speed &&
-      storeData.stops &&
-      storeData.electrification &&
-      storeData.slopes &&
-      storeData.speedlimitTags
-    ) {
+    if (storeData.speed && storeData.stops && storeData.electrification && storeData.slopes) {
       setStore((prev) => ({
         ...prev,
         speed: storeData.speed,
         stops: storeData.stops,
         electrification: storeData.electrification,
         slopes: storeData.slopes,
-        speedlimitTags: storeData.speedlimitTags,
+      }));
+    }
+    if (data.speedLimitTags) {
+      setStore((prev) => ({
+        ...prev,
+        speedLimitTags: storeData.speedLimitTags,
       }));
     }
   }, [data]);
@@ -115,10 +119,11 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
           &#8617;
         </button>
       </div>
-      <CurveLayer width={WIDTH_OFFSET} height={dynamicHeightOffset} store={store} />
-      <AxisLayerY width={width} height={dynamicHeight} store={store} />
-      <MajorGridY width={width} height={dynamicHeight} store={store} />
-      <AxisLayerX width={width} height={dynamicHeight} store={store} />
+      <CurveLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
+      <AxisLayerY width={width} height={height} store={store} />
+      <MajorGridY width={width} height={height} store={store} />
+      <AxisLayerX width={width} height={height} store={store} />
+      <SpeedLimitTagsLayer width={WIDTH_OFFSET} height={dynamicHeight} store={store} />
       <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <StepNamesLayer key={stop.name} width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <TickLayerY width={width} height={height} store={store} />

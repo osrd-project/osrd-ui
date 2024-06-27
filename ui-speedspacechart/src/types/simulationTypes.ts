@@ -413,4 +413,17 @@ export interface OsrdSimulationState {
     present: SimulationSnapshot;
     future: SimulationHistory;
   };
+  speedLimitTags?: {
+    position: number[];
+    values: (
+      | {
+          speed_limit_tags_type: 'no-tag';
+        }
+      | {
+          speed_limit_tags_type: 'tag';
+          tag_name: string;
+          color: string;
+        }
+    )[];
+  };
 }
