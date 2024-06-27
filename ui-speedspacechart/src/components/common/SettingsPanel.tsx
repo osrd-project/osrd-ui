@@ -1,13 +1,15 @@
 import React from 'react';
 import type { Store } from '../../types/chartTypes';
 import { DETAILS_BOX_SELECTION, LAYERS_SELECTION } from '../const';
+import { X } from '../../../../ui-icons/src/components/X';
 
 type SettingsPanelProps = {
+  color: string;
   store: Store;
   setStore: React.Dispatch<React.SetStateAction<Store>>;
 };
 
-const SettingsPanel = ({ store, setStore }: SettingsPanelProps) => {
+const SettingsPanel = ({ color, store, setStore }: SettingsPanelProps) => {
   const closeSettingsPanel = () => {
     setStore((prev) => ({
       ...prev,
@@ -15,12 +17,13 @@ const SettingsPanel = ({ store, setStore }: SettingsPanelProps) => {
     }));
   };
 
-  console.log('store', store);
-
   return (
-    <div id="settings-panel">
+    <div
+      id="settings-panel"
+      style={{ background: `rgba(${color.substring(4, color.length - 1)}, 0.4)` }}
+    >
       <div style={{ width: '227px', marginLeft: '32px', marginTop: '29px' }}>
-        <div className="settings-panel-section">
+        <div className="settings-panel-section font-sans">
           <span>Context</span>
         </div>
         {LAYERS_SELECTION.map((selection) => (
@@ -77,7 +80,9 @@ const SettingsPanel = ({ store, setStore }: SettingsPanelProps) => {
         ))}
       </div>
       <button id="close-settings-panel" onClick={() => closeSettingsPanel()}>
-        <span style={{ color: 'rgb(121, 118, 113)' }}>&#10006;</span>
+        <span>
+          <X />
+        </span>
       </button>
     </div>
   );

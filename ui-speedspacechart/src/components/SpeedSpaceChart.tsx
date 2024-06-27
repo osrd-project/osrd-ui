@@ -14,6 +14,10 @@ import { resetZoom } from './helpers/layersManager';
 import StepNamesLayer from './layers/StepNamesLayer';
 import { getGraphOffsets } from './utils';
 import SettingsPanel from './common/SettingsPanel';
+import { Iterations } from '../../../ui-icons/src/components/Iterations';
+import { Dash } from '../../../ui-icons/src/components/Dash';
+import { Plus } from '../../../ui-icons/src/components/Plus';
+import { KebabHorizontal } from '../../../ui-icons/src/components/KebabHorizontal';
 
 export type SpeedSpaceChartProps = {
   width: number;
@@ -50,7 +54,7 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       powerRestrictions: false,
       speedLimitTags: false,
     },
-    isSettingsPanelOpened: true,
+    isSettingsPanelOpened: false,
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
@@ -101,23 +105,27 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       }}
       tabIndex={0}
     >
-      <div className="flex justify-end absolute mt-8 ml-2" style={{ width: width }}>
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white-100 p-1 mr-6 z-10 rounded-full w-8 h-8"
-          onClick={() => reset()}
-        >
-          <span>&#8617;</span>
-        </button>
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white-100 p-1 mr-6 z-10 rounded-full w-8 h-8"
-          onClick={() => openSettingsPanel()}
-        >
-          <span className="inline-block align-top">...</span>
-        </button>
+      <div className="flex justify-end absolute" style={{ width: width, marginTop: '27px' }}>
+        <div id="interaction-button-container" className="z-10">
+          <div className="zoom-buttons">
+            <button className="interaction-button reset-button" onClick={() => reset()}>
+              <Iterations />
+            </button>
+            <button className="interaction-button plus-button">
+              <Plus />
+            </button>
+            <button className="interaction-button">
+              <Dash />
+            </button>
+          </div>
+          <button className="interaction-button elipsis-button" onClick={() => openSettingsPanel()}>
+            <KebabHorizontal />
+          </button>
+        </div>
       </div>
       {store.isSettingsPanelOpened && (
         <div className="flex justify-end absolute ml-2" style={{ width: width, marginTop: 27 }}>
-          <SettingsPanel store={store} setStore={setStore} />
+          <SettingsPanel color={backgroundColor} store={store} setStore={setStore} />
         </div>
       )}
       <CurveLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
