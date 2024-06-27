@@ -1,4 +1,9 @@
-import { clearCanvas, maxPositionValues, positionOnGraphScale } from '../../utils';
+import {
+  clearCanvas,
+  drawSeparatorLinearLayer,
+  maxPositionValues,
+  positionOnGraphScale,
+} from '../../utils';
 import type { Store } from '../../../types/chartTypes';
 import { MARGINS } from '../../const';
 
@@ -56,6 +61,7 @@ export const drawElectricalProfile = (
         ctx.fillRect(x, startHeight, profileWidth, profileHeight);
         ctx.stroke();
 
+        // Draw only if cursor hover a profile
         if (
           cursor.y &&
           cursor.x &&
@@ -96,12 +102,7 @@ export const drawElectricalProfile = (
     }
   });
 
-  ctx.beginPath();
-  ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
-  ctx.lineWidth = 1;
-  ctx.moveTo(MARGIN_LEFT, height - MARGIN_BOTTOM);
-  ctx.lineTo(width - MARGIN_RIGHT, height - MARGIN_BOTTOM);
-  ctx.stroke();
+  drawSeparatorLinearLayer(ctx, 'rgba(0,0,0,0.1)', MARGINS, width, height);
 
   ctx.restore();
 

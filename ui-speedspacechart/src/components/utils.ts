@@ -108,3 +108,28 @@ export const positionOnGraphScale = (
     margins.CURVE_MARGIN_SIDES / 2
   );
 };
+
+/**
+ * Draws a separator line on a canvas context.
+ *
+ * @param ctx - The canvas rendering context.
+ * @param separatorColor - The color of the separator line.
+ * @param margins - The margins of the canvas.
+ * @param width - The width of the canvas.
+ * @param height - The height of the canvas.
+ */
+export const drawSeparatorLinearLayer = (
+  ctx: CanvasRenderingContext2D,
+  separatorColor: string,
+  margins: typeof MARGINS,
+  width: number,
+  height: number
+) => {
+  const { MARGIN_LEFT, MARGIN_BOTTOM, MARGIN_RIGHT } = margins;
+  ctx.beginPath();
+  ctx.strokeStyle = separatorColor;
+  ctx.lineWidth = 1;
+  ctx.moveTo(MARGIN_LEFT, height - MARGIN_BOTTOM);
+  ctx.lineTo(width - MARGIN_RIGHT, height - MARGIN_BOTTOM);
+  ctx.stroke();
+};
