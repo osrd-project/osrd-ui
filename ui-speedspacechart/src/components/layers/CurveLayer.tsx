@@ -15,7 +15,7 @@ const CurveLayer = ({ width, height, store }: CurveLayerProps) => {
   return (
     <canvas
       id="curve-layer"
-      className="absolute rounded-t-xl"
+      className="absolute curve-layer-background"
       ref={canvas}
       width={width}
       height={height}

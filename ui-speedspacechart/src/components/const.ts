@@ -8,3 +8,21 @@ export const MARGINS = {
 };
 
 export const FRONT_INTERACTIVITY_LAYER_ID = '#front-interactivity-layer';
+
+export const DETAILS_BOX_SELECTION = [
+  'energySource',
+  'tractionStatus',
+  'declivities',
+  'eletricalProfiles',
+  'powerRestrictions',
+];
+
+export const LAYERS_SELECTION = [
+  'steps',
+  'declivities',
+  'speedLimits',
+  'temporarySpeedLimits',
+  'electricalProfiles',
+  'powerRestrictions',
+  'speedLimitTags',
+];

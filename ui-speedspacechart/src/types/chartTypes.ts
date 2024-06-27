@@ -17,6 +17,25 @@ export type Store = {
     x: number | null;
     y: number | null;
   };
+  detailsBoxDisplay: {
+    [key: string]: boolean;
+    energySource: boolean;
+    tractionStatus: boolean;
+    declivities: boolean;
+    eletricalProfiles: boolean;
+    powerRestrictions: boolean;
+  };
+  layersDisplay: {
+    [key: string]: boolean;
+    steps: boolean;
+    declivities: boolean;
+    speedLimits: boolean;
+    temporarySpeedLimits: boolean;
+    electricalProfiles: boolean;
+    powerRestrictions: boolean;
+    speedLimitTags: boolean;
+  };
+  isSettingsPanelOpened: boolean;
 };
 
 export type TrainDetails = {

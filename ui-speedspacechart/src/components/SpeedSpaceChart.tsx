@@ -13,6 +13,11 @@ import ReticleLayer from './layers/ReticleLayer';
 import { resetZoom } from './helpers/layersManager';
 import StepNamesLayer from './layers/StepNamesLayer';
 import { getGraphOffsets } from './utils';
+import SettingsPanel from './common/SettingsPanel';
+import { Iterations } from '../../../ui-icons/src/components/Iterations';
+import { Dash } from '../../../ui-icons/src/components/Dash';
+import { Plus } from '../../../ui-icons/src/components/Plus';
+import { KebabHorizontal } from '../../../ui-icons/src/components/KebabHorizontal';
 
 export type SpeedSpaceChartProps = {
   width: number;
@@ -33,6 +38,23 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       x: null,
       y: null,
     },
+    detailsBoxDisplay: {
+      energySource: true,
+      tractionStatus: true,
+      declivities: true,
+      eletricalProfiles: true,
+      powerRestrictions: true,
+    },
+    layersDisplay: {
+      steps: true,
+      declivities: false,
+      speedLimits: false,
+      temporarySpeedLimits: false,
+      electricalProfiles: false,
+      powerRestrictions: false,
+      speedLimitTags: false,
+    },
+    isSettingsPanelOpened: false,
   });
 
   const { WIDTH_OFFSET, HEIGHT_OFFSET } = getGraphOffsets(width, height);
@@ -46,6 +68,13 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       leftOffset: 0,
     }));
     resetZoom();
+  };
+
+  const openSettingsPanel = () => {
+    setStore((prev) => ({
+      ...prev,
+      isSettingsPanelOpened: true,
+    }));
   };
 
   useEffect(() => {
@@ -76,20 +105,44 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       }}
       tabIndex={0}
     >
-      <div className="flex justify-end absolute mt-8 ml-2" style={{ width: width }}>
-        <button
-          className="bg-blue-600 hover:bg-blue-700 text-white-100 p-1 mr-6 z-10 rounded-full w-8 h-8"
-          onClick={() => reset()}
-        >
-          &#8617;
-        </button>
+      <div className="flex justify-end absolute" style={{ width: width, marginTop: '27px' }}>
+        <div id="interaction-button-container" className="z-10">
+          <div className="zoom-buttons">
+            <button className="interaction-button reset-button" onClick={() => reset()}>
+              <Iterations />
+            </button>
+            <button className="interaction-button plus-button">
+              <Plus />
+            </button>
+            <button className="interaction-button">
+              <Dash />
+            </button>
+          </div>
+          <button className="interaction-button elipsis-button" onClick={() => openSettingsPanel()}>
+            <KebabHorizontal />
+          </button>
+        </div>
       </div>
+      {store.isSettingsPanelOpened && (
+        <div className="flex justify-end absolute ml-2" style={{ width: width, marginTop: 27 }}>
+          <SettingsPanel color={backgroundColor} store={store} setStore={setStore} />
+        </div>
+      )}
       <CurveLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
       <AxisLayerY width={width} height={height} store={store} />
       <MajorGridY width={width} height={height} store={store} />
       <AxisLayerX width={width} height={height} store={store} />
-      <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
-      <StepNamesLayer key={stop.name} width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
+      {store.layersDisplay.steps && (
+        <>
+          <StepLayer width={WIDTH_OFFSET} height={HEIGHT_OFFSET} store={store} />
+          <StepNamesLayer
+            key={stop.name}
+            width={WIDTH_OFFSET}
+            height={HEIGHT_OFFSET}
+            store={store}
+          />
+        </>
+      )}
       <TickLayerY width={width} height={height} store={store} />
       <TickLayerX width={width} height={height} store={store} />
       <ReticleLayer

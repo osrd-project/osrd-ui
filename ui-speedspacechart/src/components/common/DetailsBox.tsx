@@ -1,9 +1,11 @@
 import React from 'react';
 import { MARGINS } from '../const';
+import type { Store } from '../../types/chartTypes';
 
 type DetailsBoxProps = {
   width: number;
   height: number;
+  store: Store;
   curveX: number;
   curveY: number;
   marecoSpeedText: string;
@@ -16,6 +18,7 @@ type DetailsBoxProps = {
 const DetailsBox = ({
   width,
   height,
+  store,
   curveX,
   curveY,
   marecoSpeedText,
@@ -55,13 +58,20 @@ const DetailsBox = ({
         <span>--</span>
         <span>±--</span>
       </div>
-      {(modeText || effortText) && <hr />}
-      {modeText && <span id="mode-text">{modeText}</span>}
-      {effortText && <span id="effort-text">{effortText}</span>}
+      {(store.detailsBoxDisplay.energySource || store.detailsBoxDisplay.tractionStatus) &&
+        (modeText || effortText) && <hr />}
+      {store.detailsBoxDisplay.energySource && modeText && <span id="mode-text">{modeText}</span>}
+      {store.detailsBoxDisplay.tractionStatus && effortText && (
+        <span id="effort-text">{effortText}</span>
+      )}
       {electricalProfileText && <span id="electrical-profile-text">{electricalProfileText}</span>}
-      <span id="power-restriction">--</span>
-      <hr />
-      <span id="previous-gradient-text">{`${previousGradientText} ‰`}</span>
+      {store.detailsBoxDisplay.powerRestrictions && <span id="power-restriction">--</span>}
+      {store.detailsBoxDisplay.declivities && (
+        <>
+          <hr />
+          <span id="previous-gradient-text">{`${previousGradientText} ‰`}</span>
+        </>
+      )}
     </div>
   );
 };
