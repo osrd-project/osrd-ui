@@ -84,14 +84,25 @@ export const drawElectricalProfile = (
           ctx.strokeRect(x - 1, startHeight - 1, profileWidth + 2, profileHeight + 2);
           ctx.stroke();
 
+          // Draw profile name
           if (profileWidth > 50) {
             ctx.beginPath();
-            ctx.fillStyle = '#1F1B17';
-            ctx.font = 'bold 32px IBM Plex Sans';
+            ctx.fillStyle = '#000';
+            ctx.font = '600 14px IBM Plex Sans';
             ctx.textAlign = 'center';
             ctx.fillText(`${profile}`, x + profileWidth / 2, height / 2, profileWidth - 10);
             ctx.stroke();
           }
+
+          // Draw begin and end position
+          ctx.beginPath();
+          ctx.fillStyle = 'rgb(49, 46, 43)';
+          ctx.font = '400 14px IBM Plex Sans';
+          ctx.textAlign = 'right';
+          ctx.fillText(`${x.toFixed(1)}`, x - 12, height / 2);
+          ctx.textAlign = 'left';
+          ctx.fillText(`${(x + profileWidth).toFixed(1)}`, x + profileWidth + 12, height / 2);
+          ctx.stroke();
         }
       }
     } else {
