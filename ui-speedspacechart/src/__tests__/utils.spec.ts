@@ -5,9 +5,11 @@ import {
   maxPositionValues,
   clearCanvas,
   getAdaptiveHeight,
+  positionOnGraphScale,
 } from '../components/utils';
 import type { Store } from '../types/chartTypes';
 import type { ConsolidatedPositionSpeedTime } from '../types/simulationTypes';
+import { MARGINS } from '../components/const';
 
 const time = new Date();
 
@@ -159,5 +161,29 @@ describe('getAdaptiveHeight', () => {
     };
     const adaptiveHeight = getAdaptiveHeight(height, layersDisplay, false);
     expect(adaptiveHeight).toBe(44);
+  });
+});
+
+describe('positionOnGraphScale', () => {
+  it('should return the correct position on the graph scale', () => {
+    const position = 300;
+    const maxPosition = 600;
+    const width = 1000;
+    const ratioX = 1;
+
+    const positionOnScale = positionOnGraphScale(position, maxPosition, width, ratioX, MARGINS);
+    console.log('positionOnScale:', positionOnScale);
+    expect(positionOnScale).toBe(518);
+  });
+
+  it('should return the correct position on the graph scale with ratioX = 2', () => {
+    const position = 300;
+    const maxPosition = 600;
+    const width = 1000;
+    const ratioX = 2;
+
+    const positionOnScale = positionOnGraphScale(position, maxPosition, width, ratioX, MARGINS);
+    console.log('positionOnScale:', positionOnScale);
+    expect(positionOnScale).toBe(980);
   });
 });
