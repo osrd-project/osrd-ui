@@ -78,20 +78,16 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       electricalProfiles: data.electricalProfiles,
     };
 
-    if (
-      storeData.speed &&
-      storeData.stops &&
-      storeData.electrification &&
-      storeData.slopes &&
-      storeData.electricalProfiles
-    ) {
+    const { speed, stops, electrification, slopes, electricalProfiles } = storeData;
+
+    if (speed && stops && electrification && slopes) {
       setStore((prev) => ({
         ...prev,
-        speed: storeData.speed,
-        stops: storeData.stops,
-        electrification: storeData.electrification,
-        slopes: storeData.slopes,
-        electricalProfiles: storeData.electricalProfiles,
+        speed: speed,
+        stops: stops,
+        electrification: electrification,
+        slopes: slopes,
+        electricalProfiles: electricalProfiles,
       }));
     }
   }, [data]);

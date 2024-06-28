@@ -15,5 +15,3 @@ export const LAYERS_HEIGHTS = {
 };
 
 export const FRONT_INTERACTIVITY_LAYER_ID = '#front-interactivity-layer';
-
-export const ELECTRICAL_PROFILE_LAYER_ID = '#electrical-profile-layer';
