@@ -78,9 +78,10 @@ export const drawElectricalProfile = (
           ctx.stroke();
 
           ctx.beginPath();
+          ctx.globalCompositeOperation = 'xor';
           ctx.strokeStyle = '#FFF';
           ctx.lineWidth = 2;
-          ctx.strokeRect(x + 1, startHeight + 1, profileWidth - 2, profileHeight - 2);
+          ctx.strokeRect(x - 1, startHeight - 1, profileWidth + 2, profileHeight + 2);
           ctx.stroke();
 
           if (profileWidth > 50) {
