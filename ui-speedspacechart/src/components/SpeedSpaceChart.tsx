@@ -121,6 +121,7 @@ const SpeedSpaceChart = ({ width, height, backgroundColor, data }: SpeedSpaceCha
       <ReticleLayer
         width={width}
         height={dynamicHeight}
+        heightOffset={dynamicHeightOffset}
         store={store}
         showDetailsBox={showDetailsBox}
         setShowDetailsBox={setShowDetailsBox}

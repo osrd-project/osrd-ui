@@ -1,11 +1,12 @@
 import {
   clearCanvas,
+  drawLinearLayerBackground,
   drawSeparatorLinearLayer,
   maxPositionValues,
   positionOnGraphScale,
 } from '../../utils';
 import type { Store } from '../../../types/chartTypes';
-import { MARGINS } from '../../const';
+import { LINEAR_LAYERS_BACKGROUND_COLOR, MARGINS } from '../../const';
 
 export const drawElectricalProfile = (
   ctx: CanvasRenderingContext2D,
@@ -24,6 +25,15 @@ export const drawElectricalProfile = (
   const { values, boundaries } = electricalProfiles;
   const { MARGIN_TOP, MARGIN_BOTTOM, MARGIN_LEFT, MARGIN_RIGHT, CURVE_MARGIN_SIDES } = MARGINS;
 
+  drawLinearLayerBackground(
+    ctx,
+    LINEAR_LAYERS_BACKGROUND_COLOR.FIRST,
+    MARGINS,
+    width,
+    height,
+    store.layersDisplay
+  );
+
   values.forEach((data, index) => {
     const x =
       index === 0
@@ -40,19 +50,17 @@ export const drawElectricalProfile = (
     if ('profile' in data) {
       const { profile, profileColor, heightLevel } = data;
       const heightLevelMax = heightLevel > 7 ? 7 : heightLevel;
+      ctx.fillStyle = profileColor;
 
       if (profile === 'incompatible') {
         // Incompatible profile
         ctx.beginPath();
-        ctx.fillStyle = profileColor;
         for (let i = 0; i < 9; i++) {
           ctx.fillRect(x, startHeight + 15 + i * 3, profileWidth, 1);
         }
         ctx.stroke();
       } else {
         ctx.beginPath();
-
-        ctx.fillStyle = profileColor;
 
         startHeight += heightLevelMax * 4;
 
@@ -71,14 +79,19 @@ export const drawElectricalProfile = (
           cursor.x - leftOffset <= x + profileWidth - MARGIN_LEFT
         ) {
           ctx.beginPath();
-          ctx.fillStyle = profileColor;
           ctx.globalAlpha = 0.2;
           ctx.fillRect(x, MARGIN_TOP, profileWidth, height - 30);
           ctx.globalAlpha = 1;
           ctx.stroke();
+          // Find how to make the box shadow work
+          // ctx.shadowOffsetY = 1;
+          // ctx.shadowBlur = 2;
+          // ctx.shadowColor = 'rgba(0, 0, 0, 0.19)';
+          // ctx.shadowOffsetY = 4;
+          // ctx.shadowBlur = 9;
+          // ctx.shadowColor = 'rgba(0, 0, 0, 0.06)';
 
           ctx.beginPath();
-          ctx.globalCompositeOperation = 'xor';
           ctx.strokeStyle = '#FFF';
           ctx.lineWidth = 2;
           ctx.strokeRect(x - 1, startHeight - 1, profileWidth + 2, profileHeight + 2);
@@ -114,7 +127,7 @@ export const drawElectricalProfile = (
     }
   });
 
-  drawSeparatorLinearLayer(ctx, 'rgba(0,0,0,0.1)', MARGINS, width, height);
+  drawSeparatorLinearLayer(ctx, 'rgba(0,0,0,0.1)', MARGINS, width, height + 1);
 
   ctx.restore();
 

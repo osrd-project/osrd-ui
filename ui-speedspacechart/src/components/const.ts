@@ -13,4 +13,10 @@ export const LAYERS_HEIGHTS = {
   SPEED_LIMIT_TAGS: 40,
 };
 
+export const LINEAR_LAYERS_BACKGROUND_COLOR = {
+  FIRST: 'rgb(250, 249, 245)',
+  SECOND: 'rgb(247, 246, 238)',
+  THIRD: 'rgb(242, 240, 228)',
+};
+
 export const FRONT_INTERACTIVITY_LAYER_ID = '#front-interactivity-layer';

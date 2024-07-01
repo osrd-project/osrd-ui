@@ -133,3 +133,30 @@ export const drawSeparatorLinearLayer = (
   ctx.lineTo(width - MARGIN_RIGHT, height - MARGIN_BOTTOM);
   ctx.stroke();
 };
+
+/**
+ * Draw the background for linear layers. Depending on the layer and how many are displayed, the background color
+ * will change.
+ * @param backgroundColor depends on the linear layer. Electrical profile is always first, power restrictions
+ * can be first or second, speedlimit tags can be on any position.
+ */
+export const drawLinearLayerBackground = (
+  ctx: CanvasRenderingContext2D,
+  backgroundColor: string,
+  margins: typeof MARGINS,
+  width: number,
+  height: number,
+  layersDisplay: Store['layersDisplay']
+) => {
+  const { MARGIN_TOP, MARGIN_LEFT, MARGIN_BOTTOM, MARGIN_RIGHT } = margins;
+
+  ctx.beginPath();
+  ctx.fillStyle = backgroundColor;
+  ctx.fillRect(
+    MARGIN_LEFT,
+    getAdaptiveHeight(height, layersDisplay, false) + 4, // Maybe there is a better way to avoid the 4 ?
+    width - MARGIN_LEFT - MARGIN_RIGHT,
+    height - MARGIN_TOP - MARGIN_BOTTOM
+  );
+  ctx.stroke();
+};
