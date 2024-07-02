@@ -413,4 +413,5 @@ export interface OsrdSimulationState {
     present: SimulationSnapshot;
     future: SimulationHistory;
   };
+  powerRestrictions: SimulationPowerRestrictionRange[];
 }
