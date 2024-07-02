@@ -12,6 +12,8 @@ const PROFILE_HEIGHT_MAX = 40;
 const MARGIN_POSITION_TEXT = 12;
 const SELECTION_BAR_HEIGHT_AJUSTEMENT = 30;
 
+const maxHeightLevel = (heightLevel: number) => (heightLevel > 7 ? 7 : heightLevel);
+
 export const drawElectricalProfile = (
   ctx: CanvasRenderingContext2D,
   width: number,
@@ -61,7 +63,7 @@ export const drawElectricalProfile = (
 
     if ('profile' in data) {
       const { profile, profileColor, heightLevel } = data;
-      const heightLevelMax = heightLevel > 7 ? 7 : heightLevel;
+      const heightLevelMax = maxHeightLevel(heightLevel);
       ctx.fillStyle = profileColor;
 
       if (profile === 'incompatible') {
@@ -96,20 +98,6 @@ export const drawElectricalProfile = (
           ctx.fillRect(x, MARGIN_TOP, profileWidth, height - SELECTION_BAR_HEIGHT_AJUSTEMENT);
           ctx.globalAlpha = 1;
           ctx.stroke();
-
-          ctx.beginPath();
-          ctx.strokeStyle = '#FFF';
-          ctx.lineWidth = 2;
-          ctx.strokeRect(x - 1, startHeight - 1, profileWidth + 2, profileHeight + 2);
-          ctx.stroke();
-
-          // Find how to make the box shadow work
-          // ctx.shadowOffsetY = 1;
-          // ctx.shadowBlur = 2;
-          // ctx.shadowColor = 'rgba(0, 0, 0, 0.19)';
-          // ctx.shadowOffsetY = 4;
-          // ctx.shadowBlur = 9;
-          // ctx.shadowColor = 'rgba(0, 0, 0, 0.06)';
 
           // Draw profile name
           if (profileWidth > 50) {
@@ -148,6 +136,58 @@ export const drawElectricalProfile = (
       ctx.stroke();
     }
   });
+
+  // Draw stroke around the selected profile
+  const currentBoundaryProfileIndex = boundaries.findIndex(
+    (boundary) =>
+      cursor.x! - leftOffset <=
+      positionOnGraphScale(boundary, maxPosition, width, ratioX, MARGINS) - MARGIN_LEFT
+  );
+  if (
+    cursor.y &&
+    cursor.y <= height - MARGIN_BOTTOM + MARGIN_TOP &&
+    cursor.y >= height - MARGIN_BOTTOM + MARGIN_TOP - ELECTRICAL_PROFILES_HEIGHT
+  ) {
+    const electricalProfileValue = values[currentBoundaryProfileIndex];
+    if (
+      electricalProfileValue &&
+      'profile' in electricalProfileValue &&
+      electricalProfileValue.profile !== 'incompatible'
+    ) {
+      const { heightLevel } = electricalProfileValue;
+      const heightLevelMax = maxHeightLevel(heightLevel);
+      const startHoverStrokeHeight =
+        height - MARGIN_BOTTOM + ELECTRICAL_PROFILES_MARGIN_TOP + heightLevelMax * 4;
+
+      const x =
+        positionOnGraphScale(
+          boundaries[currentBoundaryProfileIndex - 1],
+          maxPosition,
+          width,
+          ratioX,
+          MARGINS
+        ) || MARGIN_LEFT + CURVE_MARGIN_SIDES / 2;
+
+      const profileWidth =
+        positionOnGraphScale(
+          boundaries[currentBoundaryProfileIndex],
+          maxPosition,
+          width,
+          ratioX,
+          MARGINS
+        ) - x;
+      const profileHeight = PROFILE_HEIGHT_MAX - heightLevelMax * 4;
+
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.19)';
+      ctx.shadowBlur = 5;
+
+      ctx.beginPath();
+      ctx.strokeStyle = '#FFF';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x - 1, startHoverStrokeHeight - 1, profileWidth + 2, profileHeight + 2);
+      ctx.stroke();
+    }
+  }
 
   drawSeparatorLinearLayer(ctx, 'rgba(0,0,0,0.1)', MARGINS, width, height + 1);
 
