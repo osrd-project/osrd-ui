@@ -31,6 +31,7 @@
     "clean": "rimraf dist",
     "build": "npm run rollup",
     "watch": "NODE_ENV=development rollup -c -w",
+    "test": "vitest run",
     "prepublishOnly": "npm run clean && npm run build"
   },
   "peerDependencies": {
@@ -41,14 +42,20 @@
     "tailwindcss": "^3.4.1"
   },
   "devDependencies": {
+    "@testing-library/dom": "^10.1.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.17",
+    "jsdom": "^24.0.0",
     "postcss": "^8.4.37",
     "postcss-assets": "^6.0.0",
     "postcss-import": "^16.0.0",
     "postcss-preset-env": "^9.5.2",
     "rollup-plugin-livereload": "^2.0.5",
     "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-serve": "^1.1.1"
+    "rollup-plugin-serve": "^1.1.1",
+    "vitest": "^1.5.0"
   },
   "gitHead": "973ad1478be4544e1c97303b844903247d9a9cd7"
 }
