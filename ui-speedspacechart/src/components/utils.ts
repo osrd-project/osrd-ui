@@ -63,24 +63,24 @@ export const getAdaptiveHeight = (
   layersDisplay: Store['layersDisplay'],
   isIncludingLinearLayers: boolean = true
 ): number => {
-  let currentHeight = height;
-  const { electricalProfiles, powerRestrictions, speedLimitTags } = layersDisplay;
-  if (electricalProfiles) {
-    isIncludingLinearLayers
-      ? (currentHeight += LAYERS_HEIGHTS.ELECTRICAL_PROFILES)
-      : (currentHeight -= LAYERS_HEIGHTS.ELECTRICAL_PROFILES);
-  }
-  if (powerRestrictions) {
-    isIncludingLinearLayers
-      ? (currentHeight += LAYERS_HEIGHTS.POWER_RESTRICTIONS)
-      : (currentHeight -= LAYERS_HEIGHTS.POWER_RESTRICTIONS);
-  }
-  if (speedLimitTags) {
-    isIncludingLinearLayers
-      ? (currentHeight += LAYERS_HEIGHTS.SPEED_LIMIT_TAGS)
-      : (currentHeight -= LAYERS_HEIGHTS.SPEED_LIMIT_TAGS);
-  }
-  return currentHeight;
+  const { ELECTRICAL_PROFILES_HEIGHT, POWER_RESTRICTIONS_HEIGHT, SPEED_LIMIT_TAGS_HEIGHT } =
+    LAYERS_HEIGHTS;
+
+  const layerHeights = {
+    electricalProfiles: ELECTRICAL_PROFILES_HEIGHT,
+    powerRestrictions: POWER_RESTRICTIONS_HEIGHT,
+    speedLimitTags: SPEED_LIMIT_TAGS_HEIGHT,
+  };
+
+  let adjustment = 0;
+
+  Object.keys(layerHeights).forEach((key) => {
+    const layer = key as keyof typeof layerHeights;
+    if (layersDisplay[layer]) {
+      adjustment += isIncludingLinearLayers ? layerHeights[layer] : -layerHeights[layer];
+    }
+  });
+  return height + adjustment;
 };
 
 /**
@@ -100,9 +100,9 @@ export const positionOnGraphScale = (
   margins: typeof MARGINS
 ) => {
   return (
-    ((width - margins.CURVE_MARGIN_SIDES - margins.MARGIN_LEFT - margins.MARGIN_RIGHT) /
-      maxPosition) *
-      position *
+    position *
+      ((width - margins.CURVE_MARGIN_SIDES - margins.MARGIN_LEFT - margins.MARGIN_RIGHT) /
+        maxPosition) *
       ratioX +
     margins.MARGIN_LEFT +
     margins.CURVE_MARGIN_SIDES / 2
